@@ -1,0 +1,13 @@
+fastapi==0.111.0
+uvicorn[standard]==0.30.0
+aiogram==3.4.1
+SQLAlchemy==2.0.30
+aiosqlite==0.20.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.9
+Jinja2==3.1.4
+aiosmtplib==2.0.2
+cryptography==42.0.5
+itsdangerous==2.2.0
+pydantic-settings==2.4.0
+orjson==3.10.7
