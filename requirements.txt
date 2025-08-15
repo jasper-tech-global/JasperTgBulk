@@ -9,5 +9,6 @@ Jinja2==3.1.4
 aiosmtplib==2.0.2
 cryptography==42.0.5
 itsdangerous==2.2.0
-pydantic-settings==2.4.0
+pydantic==2.5.3
+python-dotenv==1.0.1
 orjson==3.10.7

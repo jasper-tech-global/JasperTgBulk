@@ -1,19 +1,22 @@
 from __future__ import annotations
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+import os
+from dataclasses import dataclass
+from dotenv import load_dotenv
 
 
-class Settings(BaseSettings):
-    database_url: str = Field(default="sqlite+aiosqlite:///./data/app.db")
-    telegram_bot_token: str = Field(default="")
-    secret_key: str = Field(default="")
-    fernet_key: str = Field(default="")
-    admin_username: str = Field(default="admin")
-    admin_password: str = Field(default="change-me")
-    app_host: str = Field(default="0.0.0.0")
-    app_port: int = Field(default=8000)
+load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
+@dataclass
+class Settings:
+    database_url: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./data/app.db")
+    telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    secret_key: str = os.getenv("SECRET_KEY", "")
+    fernet_key: str = os.getenv("FERNET_KEY", "")
+    admin_username: str = os.getenv("ADMIN_USERNAME", "admin")
+    admin_password: str = os.getenv("ADMIN_PASSWORD", "change-me")
+    app_host: str = os.getenv("APP_HOST", "0.0.0.0")
+    app_port: int = int(os.getenv("APP_PORT", "8000"))
 
 
 settings = Settings()

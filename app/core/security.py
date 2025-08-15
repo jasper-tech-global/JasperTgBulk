@@ -32,7 +32,7 @@ class CookieSigner:
 
 class SecretBox:
     def __init__(self, key: str) -> None:
-        self._fernet = Fernet(key.encode() if not key.startswith("gAAAA") else key)
+        self._fernet = Fernet(key.encode())
 
     def encrypt(self, data: str) -> str:
         return self._fernet.encrypt(data.encode()).decode()

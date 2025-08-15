@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Customers</h2>
+<form method="post" action="/customers">
+  <label>Chat ID <input type="number" name="chat_id" required /></label>
+  <label>Label <input name="label" /></label>
+  <button type="submit">Add</button>
+</form>
+<table>
+  <thead><tr><th>ID</th><th>Chat ID</th><th>Label</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.chat_id }}</td>
+      <td>{{ r.label }}</td>
+      <td>
+        <form class="inline" method="post" action="/customers/{{ r.id }}/delete"><button type="submit">Delete</button></form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

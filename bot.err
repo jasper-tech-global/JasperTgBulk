@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "C:\Users\AnTiBoTs7\Desktop\JasperTgBulk\main_bot.py", line 7, in <module>
+    asyncio.run(run_bot())
+  File "C:\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\asyncio\base_events.py", line 664, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\AnTiBoTs7\Desktop\JasperTgBulk\app\bot\bot.py", line 66, in run_bot
+    bot = Bot(token=settings.telegram_bot_token)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AnTiBoTs7\Desktop\JasperTgBulk\.venv\Lib\site-packages\aiogram\client\bot.py", line 270, in __init__
+    validate_token(token)
+  File "C:\Users\AnTiBoTs7\Desktop\JasperTgBulk\.venv\Lib\site-packages\aiogram\utils\token.py", line 27, in validate_token
+    raise TokenValidationError("Token is invalid!")
+aiogram.utils.token.TokenValidationError: Token is invalid!

@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Tuple, Dict
 
 
-def parse_command_text(text: string) -> Tuple[str, str, Dict[str, str]]:
+def parse_command_text(text: str) -> Tuple[str, str, Dict[str, str]]:
     if not text or not text.startswith("/"):
         raise ValueError("invalid_command")
     parts = text.strip().split()

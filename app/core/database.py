@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import text
 from .config import settings
+import os
 
 
 class Base(DeclarativeBase):
@@ -14,6 +15,7 @@ session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(bind=engi
 
 
 async def init_db() -> None:
+    os.makedirs("data", exist_ok=True)
     from app.models import customer, smtp_profile, template  # noqa: F401
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
