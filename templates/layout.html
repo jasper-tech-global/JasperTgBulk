@@ -209,6 +209,93 @@
         .input-help-text {
             @apply text-sm text-gray-500 mt-1;
         }
+        
+        /* HTML Editor Styles */
+        .html-editor-tabs {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .html-editor-tab {
+            flex: 1;
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            font-weight: 500;
+            color: #374151;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .html-editor-tab:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .html-editor-tab.active {
+            background-color: #ffffff;
+            color: #374151;
+        }
+        
+        .html-editor-tab:last-child {
+            border-right: none;
+        }
+        
+        .html-editor-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            outline: none;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            background-color: #f8fafc;
+            line-height: 1.5;
+        }
+        
+        .html-editor-textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .html-quick-insert-btn {
+            padding: 0.25rem 0.5rem;
+            background-color: #e5e7eb;
+            color: #374151;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .html-quick-insert-btn:hover {
+            background-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+        
+        .html-preview-container {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            min-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .html-preview-placeholder {
+            text-align: center;
+            color: #6b7280;
+            padding: 3rem 0;
+        }
+        
+        .html-preview-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #9ca3af;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">

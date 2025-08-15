@@ -64,14 +64,127 @@
 
             <div class="input-group">
                 <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Body Template (HTML)</label>
-                <textarea name="body_template" required rows="8" 
-                          style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none; resize: vertical; font-family: 'Courier New', monospace;"
-                          onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
-                          onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
-                          onmouseenter="this.style.borderColor='#9ca3af'"
-                          onmouseleave="this.style.borderColor='#d1d5db'"
-                          placeholder="<h1>Welcome {name}!</h1><p>Thank you for joining {company_name}...</p>"></textarea>
-                <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">HTML email body with variables in { } brackets</p>
+                
+                <!-- HTML Editor Tabs -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="flex border-b border-gray-200">
+                        <button type="button" onclick="switchTab('editor')" id="editor-tab" 
+                                style="flex: 1; padding: 0.75rem; background-color: #f9fafb; border-right: 1px solid #e5e7eb; font-weight: 500; color: #374151; transition: all 0.2s;"
+                                onmouseenter="this.style.backgroundColor='#f3f4f6'"
+                                onmouseleave="this.style.backgroundColor='#f9fafb'">
+                            <i class="fas fa-code mr-2"></i>HTML Editor
+                        </button>
+                        <button type="button" onclick="switchTab('preview')" id="preview-tab" 
+                                style="flex: 1; padding: 0.75rem; background-color: #ffffff; font-weight: 500; color: #6b7280; transition: all 0.2s;"
+                                onmouseenter="this.style.backgroundColor='#f9fafb'"
+                                onmouseleave="this.style.backgroundColor='#ffffff'">
+                            <i class="fas fa-eye mr-2"></i>Live Preview
+                        </button>
+                    </div>
+                    
+                    <!-- Editor Tab -->
+                    <div id="editor-content" class="p-4">
+                        <textarea name="body_template" id="html-editor" required rows="12" 
+                                  style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none; resize: vertical; font-family: 'Courier New', monospace; background-color: #f8fafc;"
+                                  onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                                  onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                                  oninput="updatePreview()"
+                                  placeholder="<h1>Welcome {name}!</h1><p>Thank you for joining {company_name}...</p>"></textarea>
+                        
+                        <!-- Quick Insert Buttons -->
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <button type="button" onclick="insertHTML('<h1>', '</h1>')" 
+                                    style="padding: 0.25rem 0.5rem; background-color: #e5e7eb; color: #374151; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;"
+                                    onmouseenter="this.style.backgroundColor='#d1d5db'"
+                                    onmouseleave="this.style.backgroundColor='#e5e7eb'">
+                                H1
+                            </button>
+                            <button type="button" onclick="insertHTML('<h2>', '</h2>')" 
+                                    style="padding: 0.25rem 0.5rem; background-color: #e5e7eb; color: #374151; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;"
+                                    onmouseenter="this.style.backgroundColor='#d1d5db'"
+                                    onmouseleave="this.style.backgroundColor='#e5e7eb'">
+                                H2
+                            </button>
+                            <button type="button" onclick="insertHTML('<p>', '</p>')" 
+                                    style="padding: 0.25rem 0.5rem; background-color: #e5e7eb; color: #374151; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;"
+                                    onmouseenter="this.style.backgroundColor='#d1d5db'"
+                                    onmouseleave="this.style.backgroundColor='#e5e7eb'">
+                                P
+                            </button>
+                            <button type="button" onclick="insertHTML('<strong>', '</strong>')" 
+                                    style="padding: 0.25rem 0.5rem; background-color: #e5e7eb; color: #374151; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;"
+                                    onmouseenter="this.style.backgroundColor='#d1d5db'"
+                                    onmouseleave="this.style.backgroundColor='#e5e7eb'">
+                                Bold
+                            </button>
+                            <button type="button" onclick="insertHTML('<em>', '</em>')" 
+                                    style="padding: 0.25rem 0.5rem; background-color: #e5e7eb; color: #374151; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;"
+                                    onmouseenter="this.style.backgroundColor='#d1d5db'"
+                                    onmouseleave="this.style.backgroundColor='#e5e7eb'">
+                                Italic
+                            </button>
+                            <button type="button" onclick="insertHTML('<ul><li>', '</li></ul>')" 
+                                    style="padding: 0.25rem 0.5rem; background-color: #e5e7eb; color: #374151; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;"
+                                    onmouseenter="this.style.backgroundColor='#d1d5db'"
+                                    onmouseleave="this.style.backgroundColor='#e5e7eb'">
+                                List
+                            </button>
+                            <button type="button" onclick="insertHTML('<a href=&quot;#&quot;>', '</a>')" 
+                                    style="padding: 0.25rem 0.5rem; background-color: #e5e7eb; color: #374151; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;"
+                                    onmouseenter="this.style.backgroundColor='#d1d5db'"
+                                    onmouseleave="this.style.backgroundColor='#e5e7eb'">
+                                Link
+                            </button>
+                            <button type="button" onclick="insertHTML('<img src=&quot;&quot; alt=&quot;&quot; style=&quot;max-width: 100%; height: auto;&quot;>', '')" 
+                                    style="padding: 0.25rem 0.5rem; background-color: #e5e7eb; color: #374151; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;"
+                                    onmouseenter="this.style.backgroundColor='#d1d5db'"
+                                    onmouseleave="this.style.backgroundColor='#e5e7eb'">
+                                Image
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-3">
+                            <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280;">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
+                                Use the quick insert buttons above or type HTML directly. Variables like {name}, {company_name} will be replaced with actual values.
+                            </p>
+                            <button type="button" onclick="loadSampleTemplate()" 
+                                    style="padding: 0.25rem 0.75rem; background-color: #fbbf24; color: #92400e; border: none; border-radius: 0.25rem; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; font-weight: 500;"
+                                    onmouseenter="this.style.backgroundColor='#f59e0b'"
+                                    onmouseleave="this.style.backgroundColor='#fbbf24'">
+                                <i class="fas fa-magic mr-1"></i>Load Sample
+                            </button>
+                        </div>
+                    </div>
+                    
+                                         <!-- Preview Tab -->
+                     <div id="preview-content" class="p-4" style="display: none;">
+                         <div class="bg-white border border-gray-200 rounded-lg p-6 min-h-[300px]">
+                             <div id="html-preview" class="prose max-w-none" contenteditable="true" 
+                                  style="outline: none; min-height: 200px;"
+                                  oninput="syncEditorFromPreview(this.innerHTML)"
+                                  onblur="syncEditorFromPreview(this.innerHTML)">
+                                 <div class="text-center text-gray-500 py-12">
+                                     <i class="fas fa-eye text-3xl mb-3"></i>
+                                     <p>Start typing in the HTML Editor to see a live preview here</p>
+                                     <p class="text-sm mt-2">You can also edit directly in this preview!</p>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="flex items-center justify-center mt-3 space-x-4">
+                             <button type="button" onclick="syncToEditor()" 
+                                     style="padding: 0.5rem 1rem; background-color: #3b82f6; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;"
+                                     onmouseenter="this.style.backgroundColor='#2563eb'"
+                                     onmouseleave="this.style.backgroundColor='#3b82f6'">
+                                 <i class="fas fa-sync mr-2"></i>Sync to Editor
+                             </button>
+                             <p class="text-sm text-gray-600">
+                                 <i class="fas fa-info-circle mr-1"></i>
+                                 Edit directly in preview or use the sync button to update the editor
+                             </p>
+                         </div>
+                     </div>
+                </div>
             </div>
 
             <div class="flex items-center space-x-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -255,16 +368,42 @@ function copyToClipboard(text) {
 }
 
 function previewTemplate(templateId) {
-    // For now, just show a placeholder
-    // In a real implementation, you'd fetch the template data and render a preview
+    // Find the template data from the table
+    const templateRow = document.querySelector(`tr[data-template-id="${templateId}"]`);
+    if (!templateRow) {
+        showToast('Template not found', 'error');
+        return;
+    }
+    
+    // Extract template data
+    const code = templateRow.querySelector('code').textContent;
+    const subject = templateRow.querySelector('td:nth-child(4) .text-sm').textContent.trim();
+    const body = templateRow.querySelector('td:nth-child(4) .text-sm').getAttribute('data-body') || 'No body content';
+    
+    // Show preview with actual template data
     document.getElementById('preview-content').innerHTML = `
-        <div class="text-center py-8">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-eye text-2xl text-gray-400"></i>
+        <div class="space-y-4">
+            <div class="border-b border-gray-200 pb-4">
+                <h4 class="text-lg font-medium text-gray-900 mb-2">Template: ${code}</h4>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="text-sm text-gray-600 mb-1"><strong>Subject:</strong></p>
+                    <p class="text-gray-900">${subject}</p>
+                </div>
             </div>
-            <h4 class="text-lg font-medium text-gray-900 mb-2">Template Preview</h4>
-            <p class="text-gray-600">Template ID: ${templateId}</p>
-            <p class="text-gray-600">Preview functionality coming soon...</p>
+            
+            <div>
+                <p class="text-sm text-gray-600 mb-2"><strong>Email Body Preview:</strong></p>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                    ${body}
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p class="text-sm text-blue-800">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    This is how your email template will look. Variables like {name}, {company_name} will be replaced with actual values when sent.
+                </p>
+            </div>
         </div>
     `;
     document.getElementById('preview-modal').style.display = 'block';
@@ -273,6 +412,163 @@ function previewTemplate(templateId) {
 function closePreviewModal() {
     document.getElementById('preview-modal').style.display = 'none';
 }
+
+// HTML Editor Functions
+function switchTab(tab) {
+    const editorTab = document.getElementById('editor-tab');
+    const previewTab = document.getElementById('preview-tab');
+    const editorContent = document.getElementById('editor-content');
+    const previewContent = document.getElementById('preview-content');
+    
+    if (tab === 'editor') {
+        editorTab.style.backgroundColor = '#f9fafb';
+        editorTab.style.color = '#374151';
+        previewTab.style.backgroundColor = '#ffffff';
+        previewTab.style.color = '#6b7280';
+        editorContent.style.display = 'block';
+        previewContent.style.display = 'none';
+    } else {
+        previewTab.style.backgroundColor = '#f9fafb';
+        previewTab.style.color = '#374151';
+        editorTab.style.backgroundColor = '#ffffff';
+        editorTab.style.color = '#6b7280';
+        previewContent.style.display = 'block';
+        editorContent.style.display = 'none';
+        updatePreview();
+    }
+}
+
+function updatePreview() {
+    const editor = document.getElementById('html-editor');
+    const preview = document.getElementById('html-preview');
+    const html = editor.value;
+    
+    if (html.trim()) {
+        preview.innerHTML = html;
+    } else {
+        preview.innerHTML = `
+            <div class="text-center text-gray-500 py-12">
+                <i class="fas fa-eye text-3xl mb-3"></i>
+                <p>Start typing in the HTML Editor to see a live preview here</p>
+            </div>
+        `;
+    }
+}
+
+function insertHTML(openTag, closeTag) {
+    const editor = document.getElementById('html-editor');
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const text = editor.value;
+    const selectedText = text.substring(start, end);
+    
+    const newText = openTag + selectedText + closeTag;
+    editor.value = text.substring(0, start) + newText + text.substring(end);
+    
+    // Set cursor position after the inserted content
+    editor.selectionStart = start + openTag.length;
+    editor.selectionEnd = start + openTag.length + selectedText.length;
+    
+    // Focus back to editor and update preview
+    editor.focus();
+    updatePreview();
+}
+
+ function loadSampleTemplate() {
+     const editor = document.getElementById('html-editor');
+     const sampleHTML = `<h1 style="color: #2563eb; text-align: center; margin-bottom: 1rem;">Welcome {name}!</h1>
+ 
+ <p style="color: #374151; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem;">
+     Thank you for joining <strong>{company_name}</strong>! We're excited to have you on board.
+ </p>
+ 
+ <div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1.5rem 0; border-radius: 0.25rem;">
+     <h2 style="color: #1e40af; margin: 0 0 0.5rem 0;">What's Next?</h2>
+     <ul style="color: #4b5563; margin: 0; padding-left: 1.5rem;">
+         <li>Complete your profile setup</li>
+         <li>Explore our services</li>
+         <li>Connect with our team</li>
+     </ul>
+ </div>
+ 
+ <p style="color: #374151; margin-bottom: 1rem;">
+     If you have any questions, feel free to reach out to us at <a href="mailto:support@{company_domain}" style="color: #3b82f6; text-decoration: none;">support@{company_domain}</a>
+ </p>
+ 
+ <div style="text-align: center; margin-top: 2rem; padding: 1rem; background-color: #f0f9ff; border-radius: 0.5rem;">
+     <p style="color: #0369a1; margin: 0;">
+         <i class="fas fa-heart" style="color: #ef4444;"></i>
+         Welcome to the {company_name} family!
+     </p>
+ </div>`;
+     
+     editor.value = sampleHTML;
+     updatePreview();
+     
+     // Switch to preview tab to show the result
+     switchTab('preview');
+     
+     showToast('Sample template loaded! Switch to Preview tab to see the result.', 'success');
+ }
+ 
+ // Two-way sync functions for live editing
+ function syncEditorFromPreview(htmlContent) {
+     const editor = document.getElementById('html-editor');
+     if (editor.value !== htmlContent) {
+         editor.value = htmlContent;
+     }
+ }
+ 
+ function syncToEditor() {
+     const preview = document.getElementById('html-preview');
+     const editor = document.getElementById('html-editor');
+     editor.value = preview.innerHTML;
+     showToast('Preview content synced to editor!', 'success');
+ }
+ 
+ // Enhanced updatePreview function with better HTML handling
+ function updatePreview() {
+     const editor = document.getElementById('html-editor');
+     const preview = document.getElementById('html-preview');
+     const html = editor.value;
+     
+     if (html.trim()) {
+         // Preserve cursor position in preview if it's focused
+         const wasFocused = document.activeElement === preview;
+         const selection = window.getSelection();
+         let range = null;
+         
+         if (wasFocused && selection.rangeCount > 0) {
+             range = selection.getRangeAt(0);
+         }
+         
+         preview.innerHTML = html;
+         
+         // Restore cursor position if preview was focused
+         if (wasFocused && range) {
+             try {
+                 selection.removeAllRanges();
+                 selection.addRange(range);
+             } catch (e) {
+                 // Fallback: focus at end
+                 preview.focus();
+                 const range = document.createRange();
+                 range.selectNodeContents(preview);
+                 range.collapse(false);
+                 selection.removeAllRanges();
+                 selection.addRange(range);
+             }
+         }
+     } else {
+         preview.innerHTML = `
+             <div class="text-center text-gray-500 py-12">
+                 <i class="fas fa-eye text-3xl mb-3"></i>
+                 <p>Start typing in the HTML Editor to see a live preview here</p>
+                 <p class="text-sm mt-2">You can also edit directly in this preview!</p>
+             </div>
+         `;
+     }
+ }
 
 // Close modal when clicking outside
 document.getElementById('preview-modal').addEventListener('click', function(e) {
