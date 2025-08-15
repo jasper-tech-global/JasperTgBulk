@@ -1,24 +1,163 @@
 {% extends "layout.html" %}
+{% block page_title %}Customers{% endblock %}
+
 {% block content %}
-<h2>Customers</h2>
-<form method="post" action="/customers">
-  <label>Chat ID <input type="number" name="chat_id" required /></label>
-  <label>Label <input name="label" /></label>
-  <button type="submit">Add</button>
-</form>
-<table>
-  <thead><tr><th>ID</th><th>Chat ID</th><th>Label</th><th>Actions</th></tr></thead>
-  <tbody>
-  {% for r in rows %}
-    <tr>
-      <td>{{ r.id }}</td>
-      <td>{{ r.chat_id }}</td>
-      <td>{{ r.label }}</td>
-      <td>
-        <form class="inline" method="post" action="/customers/{{ r.id }}/delete"><button type="submit">Delete</button></form>
-      </td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Customer Management</h1>
+            <p class="text-gray-600">Manage who can use your Telegram bot to send emails</p>
+        </div>
+        <button onclick="toggleForm()" class="btn-primary">
+            <i class="fas fa-user-plus mr-2"></i>Add Customer
+        </button>
+    </div>
+
+    <!-- Add Customer Form -->
+    <div id="customer-form" class="card" style="display: none;">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Customer</h3>
+        <form method="post" action="/customers" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="form-label">Telegram Chat ID</label>
+                    <input type="number" name="chat_id" required class="form-input" placeholder="e.g., 123456789">
+                    <p class="text-sm text-gray-500 mt-1">The unique chat ID from Telegram</p>
+                </div>
+                <div>
+                    <label class="form-label">Customer Label</label>
+                    <input type="text" name="label" class="form-input" placeholder="e.g., John Doe, Company ABC">
+                    <p class="text-sm text-gray-500 mt-1">Optional label to identify the customer</p>
+                </div>
+            </div>
+
+            <div class="flex space-x-3">
+                <button type="submit" class="btn-success">
+                    <i class="fas fa-save mr-2"></i>Add Customer
+                </button>
+                <button type="button" onclick="toggleForm()" class="btn-secondary">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Chat ID</th>
+                    <th>Added</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in rows %}
+                <tr>
+                    <td>
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">
+                                    {% if customer.label %}
+                                        {{ customer.label }}
+                                    {% else %}
+                                        Customer #{{ customer.id }}
+                                    {% endif %}
+                                </div>
+                                <div class="text-sm text-gray-500">ID: {{ customer.id }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex items-center space-x-2">
+                            <code class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-sm font-mono">{{ customer.chat_id }}</code>
+                            <button onclick="copyToClipboard('{{ customer.chat_id }}')" class="text-gray-400 hover:text-gray-600" title="Copy Chat ID">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-sm text-gray-900">
+                            {% if customer.created_at %}
+                                {{ customer.created_at.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                Unknown
+                            {% endif %}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            {% if customer.created_at %}
+                                {{ customer.created_at.strftime('%H:%M') }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <form method="post" action="/customers/{{ customer.id }}/delete" class="inline" onsubmit="return confirm('Are you sure you want to remove this customer? They will no longer be able to use the bot.')">
+                            <button type="submit" class="btn-danger text-sm">
+                                <i class="fas fa-user-minus mr-1"></i>Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Empty State -->
+    {% if not rows %}
+    <div class="card text-center py-12">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-users text-3xl text-gray-400"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No customers yet</h3>
+        <p class="text-gray-600 mb-4">Add your first customer to allow them to use the Telegram bot for sending emails.</p>
+        <button onclick="toggleForm()" class="btn-primary">
+            <i class="fas fa-user-plus mr-2"></i>Add First Customer
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- How to Get Chat ID -->
+    <div class="card bg-blue-50 border-blue-200">
+        <div class="flex items-start space-x-3">
+            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <i class="fas fa-info text-blue-600"></i>
+            </div>
+            <div>
+                <h4 class="font-medium text-blue-900 mb-2">How to get a Telegram Chat ID</h4>
+                <ol class="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                    <li>Ask the user to send a message to your bot</li>
+                    <li>Visit: <code class="bg-blue-100 px-1 rounded">https://api.telegram.org/bot<strong>YOUR_BOT_TOKEN</strong>/getUpdates</code></li>
+                    <li>Look for the "chat" object and find the "id" field</li>
+                    <li>Use that number as the Chat ID when adding the customer</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleForm() {
+    const form = document.getElementById('customer-form');
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+        form.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        form.style.display = 'none';
+    }
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('Chat ID copied to clipboard!', 'success');
+    }, function(err) {
+        showToast('Failed to copy to clipboard', 'error');
+    });
+}
+</script>
 {% endblock %}
