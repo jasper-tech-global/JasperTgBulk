@@ -19,11 +19,11 @@
 
     <!-- Add Template Form -->
     <div id="template-form" class="card" style="display: none;">
-        <h3 class="text-lg font-semibold text-gray-900 mb-6">Add New Email Template</h3>
+                 <h3 class="text-lg font-semibold mb-6" style="color: var(--text-primary);">Add New Email Template</h3>
         <form method="post" action="/templates" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="input-group">
-                    <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Template Code</label>
+                                         <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Template Code</label>
                     <input type="text" name="code" required 
                            style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
                            onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
@@ -31,10 +31,10 @@
                            onmouseenter="this.style.borderColor='#9ca3af'"
                            onmouseleave="this.style.borderColor='#d1d5db'"
                            placeholder="e.g., welcome, invoice, newsletter">
-                    <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">The code customers will use in Telegram (e.g., /welcome)</p>
+                                         <p class="input-help-text" style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-secondary);">The code customers will use in Telegram (e.g., /welcome)</p>
                 </div>
                 <div class="input-group">
-                    <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">SMTP Profile</label>
+                                         <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">SMTP Profile</label>
                     <select name="smtp_profile_id" required 
                             style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none; background-color: white; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M5 6l5 5 5-5 2 1-7 7-7-7 2-1z" fill="%236b7280"/></svg>'); background-repeat: no-repeat; background-position: right 0.5rem center; padding-right: 2.5rem;"
                             onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
@@ -46,12 +46,12 @@
                         <option value="{{ smtp.id }}">{{ smtp.name }} ({{ smtp.host }})</option>
                         {% endfor %}
                     </select>
-                    <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Which email server to use for this template</p>
+                                         <p class="input-help-text" style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-secondary);">Which email server to use for this template</p>
                 </div>
             </div>
 
             <div class="input-group">
-                <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Subject Template</label>
+                                 <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Subject Template</label>
                 <input type="text" name="subject_template" required 
                        style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
                        onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
@@ -59,11 +59,11 @@
                        onmouseenter="this.style.borderColor='#9ca3af'"
                        onmouseleave="this.style.borderColor='#d1d5db'"
                        placeholder="e.g., Welcome to {company_name}!">
-                <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Email subject with variables in { } brackets</p>
+                                 <p class="input-help-text" style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-secondary);">Email subject with variables in { } brackets</p>
             </div>
 
             <div class="input-group">
-                <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Body Template (HTML)</label>
+                                 <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Body Template (HTML)</label>
                 
                 <!-- HTML Editor Tabs -->
                 <div class="border border-gray-200 rounded-lg overflow-hidden">
@@ -187,17 +187,17 @@
                 </div>
             </div>
 
-            <div class="flex items-center space-x-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <label class="flex items-center cursor-pointer">
-                    <input type="checkbox" name="active" 
-                           style="width: 1rem; height: 1rem; margin-right: 0.75rem; color: #3b82f6; border: 1px solid #d1d5db; border-radius: 0.25rem; cursor: pointer;"
-                           onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
-                           onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
-                    <span style="font-size: 0.875rem; color: #374151; font-weight: 500;">Active (customers can use this template)</span>
-                </label>
-            </div>
+                         <div class="flex items-center space-x-6 p-4 rounded-lg border" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+                 <label class="flex items-center cursor-pointer">
+                     <input type="checkbox" name="active" 
+                            style="width: 1rem; height: 1rem; margin-right: 0.75rem; color: #3b82f6; border: 1px solid var(--border-color); border-radius: 0.25rem; cursor: pointer;"
+                            onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                            onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'">
+                     <span style="font-size: 0.875rem; color: var(--text-primary); font-weight: 500;">Active (customers can use this template)</span>
+                 </label>
+             </div>
 
-            <div class="button-group" style="display: flex; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                         <div class="button-group" style="display: flex; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
                 <button type="submit" 
                         style="display: inline-flex; align-items: center; justify-content: center; background-color: #059669; color: white; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; font-size: 0.875rem;"
                         onmouseenter="this.style.backgroundColor='#047857'; this.style.transform='scale(1.05)'"
@@ -232,25 +232,25 @@
                 <tr>
                     <td>
                         <div class="flex items-center">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas fa-file-alt text-purple-600"></i>
-                            </div>
+                                                         <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3" style="background-color: var(--gray-100-bg);">
+                                 <i class="fas fa-file-alt" style="color: var(--purple-600-text);"></i>
+                             </div>
                             <div>
-                                <div class="font-medium text-gray-900">Template #{{ template.id }}</div>
-                                <div class="text-sm text-gray-500">
-                                    {% if template.created_at %}
-                                        Created: {{ template.created_at.strftime('%Y-%m-%d') }}
-                                    {% else %}
-                                        Created: Unknown
-                                    {% endif %}
-                                </div>
+                                                                 <div class="font-medium" style="color: var(--text-primary);">Template #{{ template.id }}</div>
+                                 <div class="text-sm" style="color: var(--text-secondary);">
+                                     {% if template.created_at %}
+                                         Created: {{ template.created_at.strftime('%Y-%m-%d') }}
+                                     {% else %}
+                                         Created: Unknown
+                                     {% endif %}
+                                 </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="flex items-center space-x-2">
                             <code>/{{ template.code }}</code>
-                            <button onclick="copyToClipboard('/{{ template.code }}')" class="text-gray-400 hover:text-gray-600 transition-colors duration-200" title="Copy Command">
+                            <button onclick="copyToClipboard('/{{ template.code }}')" class="transition-colors duration-200" title="Copy Command" style="color: var(--gray-400-text);" onmouseenter="this.style.color='var(--gray-600-text)'" onmouseleave="this.style.color='var(--gray-400-text)'">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -258,17 +258,17 @@
                     <td>
                         <div class="text-sm">
                             {% if template.smtp_profile %}
-                                <div class="font-medium text-gray-900">{{ template.smtp_profile.name }}</div>
-                                <div class="text-gray-500">{{ template.smtp_profile.host }}</div>
+                                                             <div class="font-medium" style="color: var(--text-primary);">{{ template.smtp_profile.name }}</div>
+                             <div style="color: var(--text-secondary);">{{ template.smtp_profile.host }}</div>
                             {% else %}
-                                <span class="text-red-600">No SMTP Profile</span>
+                                <span style="color: var(--red-600-text);">No SMTP Profile</span>
                             {% endif %}
                         </div>
                     </td>
                     <td>
-                        <div class="text-sm text-gray-900 max-w-xs truncate" title="{{ template.subject_template }}">
-                            {{ template.subject_template }}
-                        </div>
+                                                 <div class="text-sm max-w-xs truncate" title="{{ template.subject_template }}" style="color: var(--text-primary);">
+                             {{ template.subject_template }}
+                         </div>
                     </td>
                     <td>
                         {% if template.active %}
@@ -303,32 +303,35 @@
     {% if not rows %}
     <div class="card text-center py-12">
         <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-file-alt text-3xl text-gray-400"></i>
+                         <i class="fas fa-file-alt text-3xl" style="color: var(--gray-400-text);"></i>
         </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No templates yet</h3>
-        <p class="text-gray-600 mb-4">Create your first email template to allow customers to send emails through the bot.</p>
-        <button onclick="toggleForm()" class="btn-primary">
+                 <h3 class="text-lg font-medium mb-2" style="color: var(--text-primary);">No templates yet</h3>
+         <p class="mb-4" style="color: var(--text-secondary);">Create your first email template to allow customers to send emails through the bot.</p>
+        <button onclick="toggleForm()" 
+                style="display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; transition: all 0.3s; font-size: 0.875rem; box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);"
+                onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px 0 rgba(59, 130, 246, 0.5)'"
+                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px 0 rgba(59, 130, 246, 0.39)'">
             <i class="fas fa-plus mr-2"></i>Add First Template
         </button>
     </div>
     {% endif %}
 
-    <!-- Usage Instructions -->
-    <div class="card bg-green-50 border-green-200">
-        <div class="flex items-start space-x-3">
-            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                <i class="fas fa-lightbulb text-green-600"></i>
-            </div>
-            <div>
-                <h4 class="font-medium text-green-900 mb-2">How customers use templates</h4>
-                <p class="text-sm text-green-800 mb-2">Customers can use templates in Telegram with this format:</p>
-                <div class="bg-green-100 p-3 rounded-lg">
-                    <code class="text-green-800">/{{ "template_code" }} recipient@email.com key1=value1 key2=value2</code>
-                </div>
-                <p class="text-sm text-green-800 mt-2">Example: <code class="bg-green-100 px-1 rounded">/welcome john@example.com name=John company=ABC Corp</code></p>
-            </div>
-        </div>
-    </div>
+         <!-- Usage Instructions -->
+     <div class="card" style="background-color: var(--success-box-bg); border-color: var(--success-box-border);">
+         <div class="flex items-start space-x-3">
+             <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background-color: var(--success-icon-bg);">
+                 <i class="fas fa-lightbulb" style="color: var(--success-icon-color);"></i>
+             </div>
+             <div>
+                 <h4 class="font-medium mb-2" style="color: var(--success-title-color);">How customers use templates</h4>
+                 <p class="text-sm mb-2" style="color: var(--success-text-color);">Customers can use templates in Telegram with this format:</p>
+                 <div class="p-3 rounded-lg" style="background-color: var(--success-code-bg);">
+                     <code style="color: var(--success-code-text);">/{{ "template_code" }} recipient@email.com key1=value1 key2=value2</code>
+                 </div>
+                 <p class="text-sm mt-2" style="color: var(--success-text-color);">Example: <code class="px-1 rounded" style="background-color: var(--success-code-bg); color: var(--success-code-text);">/welcome john@example.com name=John company=ABC Corp</code></p>
+             </div>
+         </div>
+     </div>
 </div>
 
 <!-- Template Preview Modal -->
@@ -383,23 +386,23 @@ function previewTemplate(templateId) {
     // Show preview with actual template data
     document.getElementById('preview-content').innerHTML = `
         <div class="space-y-4">
-            <div class="border-b border-gray-200 pb-4">
-                <h4 class="text-lg font-medium text-gray-900 mb-2">Template: ${code}</h4>
-                <div class="bg-gray-50 p-3 rounded-lg">
-                    <p class="text-sm text-gray-600 mb-1"><strong>Subject:</strong></p>
-                    <p class="text-gray-900">${subject}</p>
+            <div class="border-b pb-4" style="border-color: var(--border-color);">
+                <h4 class="text-lg font-medium mb-2" style="color: var(--text-primary);">Template: ${code}</h4>
+                <div class="p-3 rounded-lg" style="background-color: var(--bg-secondary);">
+                    <p class="text-sm mb-1" style="color: var(--text-secondary);"><strong>Subject:</strong></p>
+                    <p style="color: var(--text-primary);">${subject}</p>
                 </div>
             </div>
             
             <div>
-                <p class="text-sm text-gray-600 mb-2"><strong>Email Body Preview:</strong></p>
-                <div class="bg-white border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                <p class="text-sm mb-2" style="color: var(--text-secondary);"><strong>Email Body Preview:</strong></p>
+                <div class="border rounded-lg p-4 max-h-96 overflow-y-auto" style="background-color: var(--card-bg); border-color: var(--border-color);">
                     ${body}
                 </div>
             </div>
             
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p class="text-sm text-blue-800">
+            <div class="border rounded-lg p-3" style="background-color: var(--info-box-bg); border-color: var(--info-box-border);">
+                <p class="text-sm" style="color: var(--info-text-color);">
                     <i class="fas fa-info-circle mr-1"></i>
                     This is how your email template will look. Variables like {name}, {company_name} will be replaced with actual values when sent.
                 </p>
@@ -421,17 +424,17 @@ function switchTab(tab) {
     const previewContent = document.getElementById('preview-content');
     
     if (tab === 'editor') {
-        editorTab.style.backgroundColor = '#f9fafb';
-        editorTab.style.color = '#374151';
-        previewTab.style.backgroundColor = '#ffffff';
-        previewTab.style.color = '#6b7280';
+        editorTab.style.backgroundColor = 'var(--bg-secondary)';
+        editorTab.style.color = 'var(--text-primary)';
+        previewTab.style.backgroundColor = 'var(--card-bg)';
+        previewTab.style.color = 'var(--text-secondary)';
         editorContent.style.display = 'block';
         previewContent.style.display = 'none';
     } else {
-        previewTab.style.backgroundColor = '#f9fafb';
-        previewTab.style.color = '#374151';
-        editorTab.style.backgroundColor = '#ffffff';
-        editorTab.style.color = '#6b7280';
+        previewTab.style.backgroundColor = 'var(--bg-secondary)';
+        previewTab.style.color = 'var(--text-primary)';
+        editorTab.style.backgroundColor = 'var(--card-bg)';
+        editorTab.style.color = 'var(--text-secondary)';
         previewContent.style.display = 'block';
         editorContent.style.display = 'none';
         updatePreview();
@@ -447,7 +450,7 @@ function updatePreview() {
         preview.innerHTML = html;
     } else {
         preview.innerHTML = `
-            <div class="text-center text-gray-500 py-12">
+            <div class="text-center py-12" style="color: var(--text-secondary);">
                 <i class="fas fa-eye text-3xl mb-3"></i>
                 <p>Start typing in the HTML Editor to see a live preview here</p>
             </div>
@@ -476,27 +479,27 @@ function insertHTML(openTag, closeTag) {
 
  function loadSampleTemplate() {
      const editor = document.getElementById('html-editor');
-     const sampleHTML = `<h1 style="color: #2563eb; text-align: center; margin-bottom: 1rem;">Welcome {name}!</h1>
+     const sampleHTML = `<h1 style="color: var(--blue-600-text); text-align: center; margin-bottom: 1rem;">Welcome {name}!</h1>
  
- <p style="color: #374151; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem;">
+ <p style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem;">
      Thank you for joining <strong>{company_name}</strong>! We're excited to have you on board.
  </p>
  
- <div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1.5rem 0; border-radius: 0.25rem;">
-     <h2 style="color: #1e40af; margin: 0 0 0.5rem 0;">What's Next?</h2>
-     <ul style="color: #4b5563; margin: 0; padding-left: 1.5rem;">
+ <div style="background-color: var(--bg-secondary); border-left: 4px solid var(--blue-600-text); padding: 1rem; margin: 1.5rem 0; border-radius: 0.25rem;">
+     <h2 style="color: var(--blue-600-text); margin: 0 0 0.5rem 0;">What's Next?</h2>
+     <ul style="color: var(--text-secondary); margin: 0; padding-left: 1.5rem;">
          <li>Complete your profile setup</li>
          <li>Explore our services</li>
          <li>Connect with our team</li>
      </ul>
  </div>
  
- <p style="color: #374151; margin-bottom: 1rem;">
-     If you have any questions, feel free to reach out to us at <a href="mailto:support@{company_domain}" style="color: #3b82f6; text-decoration: none;">support@{company_domain}</a>
+ <p style="color: var(--text-primary); margin-bottom: 1rem;">
+     If you have any questions, feel free to reach out to us at <a href="mailto:support@{company_domain}" style="color: var(--blue-600-text); text-decoration: none;">support@{company_domain}</a>
  </p>
  
- <div style="text-align: center; margin-top: 2rem; padding: 1rem; background-color: #f0f9ff; border-radius: 0.5rem;">
-     <p style="color: #0369a1; margin: 0;">
+ <div style="text-align: center; margin-top: 2rem; padding: 1rem; background-color: var(--info-box-bg); border-radius: 0.5rem;">
+     <p style="color: var(--info-title-color); margin: 0;">
          <i class="fas fa-heart" style="color: #ef4444;"></i>
          Welcome to the {company_name} family!
      </p>
@@ -559,15 +562,15 @@ function insertHTML(openTag, closeTag) {
                  selection.addRange(range);
              }
          }
-     } else {
-         preview.innerHTML = `
-             <div class="text-center text-gray-500 py-12">
-                 <i class="fas fa-eye text-3xl mb-3"></i>
-                 <p>Start typing in the HTML Editor to see a live preview here</p>
-                 <p class="text-sm mt-2">You can also edit directly in this preview!</p>
-             </div>
-         `;
-     }
+         } else {
+        preview.innerHTML = `
+            <div class="text-center py-12" style="color: var(--text-secondary);">
+                <i class="fas fa-eye text-3xl mb-3"></i>
+                <p>Start typing in the HTML Editor to see a live preview here</p>
+                <p class="text-sm mt-2">You can also edit directly in this preview!</p>
+            </div>
+        `;
+    }
  }
 
 // Close modal when clicking outside

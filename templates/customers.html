@@ -19,11 +19,11 @@
 
     <!-- Add Customer Form -->
     <div id="customer-form" class="card" style="display: none;">
-        <h3 class="text-lg font-semibold text-gray-900 mb-6">Add New Customer</h3>
+                 <h3 class="text-lg font-semibold mb-6" style="color: var(--text-primary);">Add New Customer</h3>
         <form method="post" action="/customers" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Telegram Chat ID</label>
+                                         <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Telegram Chat ID</label>
                     <input type="number" name="chat_id" required 
                            style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
                            onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
@@ -31,10 +31,10 @@
                            onmouseenter="this.style.borderColor='#9ca3af'"
                            onmouseleave="this.style.borderColor='#d1d5db'"
                            placeholder="e.g., 123456789">
-                    <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">The unique chat ID from Telegram</p>
+                                         <p style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-secondary);">The unique chat ID from Telegram</p>
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Customer Label</label>
+                                         <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Customer Label</label>
                     <input type="text" name="label" 
                            style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
                            onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
@@ -42,11 +42,11 @@
                            onmouseenter="this.style.borderColor='#9ca3af'"
                            onmouseleave="this.style.borderColor='#d1d5db'"
                            placeholder="e.g., John Doe, Company ABC">
-                    <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Optional label to identify the customer</p>
+                                         <p style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-secondary);">Optional label to identify the customer</p>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                         <div style="display: flex; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
                 <button type="submit" 
                         style="display: inline-flex; align-items: center; justify-content: center; background-color: #059669; color: white; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; font-size: 0.875rem;"
                         onmouseenter="this.style.backgroundColor='#047857'; this.style.transform='scale(1.05)'"
@@ -79,42 +79,42 @@
                 <tr>
                     <td>
                         <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas fa-user text-blue-600"></i>
-                            </div>
+                                                         <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3" style="background-color: var(--gray-100-bg);">
+                                 <i class="fas fa-user" style="color: var(--blue-600-text);"></i>
+                             </div>
                             <div>
-                                <div class="font-medium text-gray-900">
-                                    {% if customer.label %}
-                                        {{ customer.label }}
-                                    {% else %}
-                                        Customer #{{ customer.id }}
-                                    {% endif %}
-                                </div>
-                                <div class="text-sm text-gray-500">ID: {{ customer.id }}</div>
+                                                                 <div class="font-medium" style="color: var(--text-primary);">
+                                     {% if customer.label %}
+                                         {{ customer.label }}
+                                     {% else %}
+                                         Customer #{{ customer.id }}
+                                     {% endif %}
+                                 </div>
+                                 <div class="text-sm" style="color: var(--text-secondary);">ID: {{ customer.id }}</div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="flex items-center space-x-2">
-                            <code class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-sm font-mono">{{ customer.chat_id }}</code>
-                            <button onclick="copyToClipboard('{{ customer.chat_id }}')" class="text-gray-400 hover:text-gray-600" title="Copy Chat ID">
+                                                         <code class="px-2 py-1 rounded text-sm font-mono" style="background-color: var(--gray-100-bg); color: var(--gray-800-text);">{{ customer.chat_id }}</code>
+                                                         <button onclick="copyToClipboard('{{ customer.chat_id }}')" title="Copy Chat ID" style="color: var(--gray-400-text);" onmouseenter="this.style.color='var(--gray-600-text)'" onmouseleave="this.style.color='var(--gray-400-text)'">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
                     </td>
                     <td>
-                        <div class="text-sm text-gray-900">
-                            {% if customer.created_at %}
-                                {{ customer.created_at.strftime('%Y-%m-%d') }}
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            {% if customer.created_at %}
-                                {{ customer.created_at.strftime('%H:%M') }}
-                            {% endif %}
-                        </div>
+                                                 <div class="text-sm" style="color: var(--text-primary);">
+                             {% if customer.created_at %}
+                                 {{ customer.created_at.strftime('%Y-%m-%d') }}
+                             {% else %}
+                                 Unknown
+                             {% endif %}
+                         </div>
+                         <div class="text-xs" style="color: var(--text-secondary);">
+                             {% if customer.created_at %}
+                                 {{ customer.created_at.strftime('%H:%M') }}
+                             {% endif %}
+                         </div>
                     </td>
                     <td>
                         <form method="post" action="/customers/{{ customer.id }}/delete" class="inline" onsubmit="return confirm('Are you sure you want to remove this customer? They will no longer be able to use the bot.')">
@@ -133,33 +133,36 @@
     {% if not rows %}
     <div class="card text-center py-12">
         <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-users text-3xl text-gray-400"></i>
+                         <i class="fas fa-users text-3xl" style="color: var(--gray-400-text);"></i>
         </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No customers yet</h3>
-        <p class="text-gray-600 mb-4">Add your first customer to allow them to use the Telegram bot for sending emails.</p>
-        <button onclick="toggleForm()" class="btn-primary">
+                 <h3 class="text-lg font-medium mb-2" style="color: var(--text-primary);">No customers yet</h3>
+         <p class="mb-4" style="color: var(--text-secondary);">Add your first customer to allow them to use the Telegram bot for sending emails.</p>
+        <button onclick="toggleForm()" 
+                style="display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; transition: all 0.3s; font-size: 0.875rem; box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);"
+                onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px 0 rgba(59, 130, 246, 0.5)'"
+                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px 0 rgba(59, 130, 246, 0.39)'">
             <i class="fas fa-user-plus mr-2"></i>Add First Customer
         </button>
     </div>
     {% endif %}
 
-    <!-- How to Get Chat ID -->
-    <div class="card bg-blue-50 border-blue-200">
-        <div class="flex items-start space-x-3">
-            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                <i class="fas fa-info text-blue-600"></i>
-            </div>
-            <div>
-                <h4 class="font-medium text-blue-900 mb-2">How to get a Telegram Chat ID</h4>
-                <ol class="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-                    <li>Ask the user to send a message to your bot</li>
-                    <li>Visit: <code class="bg-blue-100 px-1 rounded">https://api.telegram.org/bot<strong>YOUR_BOT_TOKEN</strong>/getUpdates</code></li>
-                    <li>Look for the "chat" object and find the "id" field</li>
-                    <li>Use that number as the Chat ID when adding the customer</li>
-                </ol>
-            </div>
-        </div>
-    </div>
+         <!-- How to Get Chat ID -->
+     <div class="card" style="background-color: var(--info-box-bg); border-color: var(--info-box-border);">
+         <div class="flex items-start space-x-3">
+             <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background-color: var(--info-icon-bg);">
+                 <i class="fas fa-info" style="color: var(--info-icon-color);"></i>
+             </div>
+             <div>
+                 <h4 class="font-medium mb-2" style="color: var(--info-title-color);">How to get a Telegram Chat ID</h4>
+                 <ol class="text-sm space-y-1 list-decimal list-inside" style="color: var(--info-text-color);">
+                     <li>Ask the user to send a message to your bot</li>
+                     <li>Visit: <code class="px-1 rounded" style="background-color: var(--info-code-bg); color: var(--info-code-text);">https://api.telegram.org/bot<strong>YOUR_BOT_TOKEN</strong>/getUpdates</code></li>
+                     <li>Look for the "chat" object and find the "id" field</li>
+                     <li>Use that number as the Chat ID when adding the customer</li>
+                 </ol>
+             </div>
+         </div>
+     </div>
 </div>
 
 <script>

@@ -24,10 +24,117 @@
             }
         }
     </script>
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+         <style>
+         /* Theme CSS Variables */
+         :root[data-theme="light"] {
+             --bg-primary: #ffffff;
+             --bg-secondary: #f9fafb;
+             --bg-sidebar: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+             --text-primary: #111827;
+             --text-secondary: #6b7280;
+             --text-sidebar: #ffffff;
+             --border-color: #e5e7eb;
+             --card-bg: #ffffff;
+             --card-border: #f3f4f6;
+             --hover-bg: #f3f4f6;
+             --input-bg: #ffffff;
+             --code-bg: #f3f4f6;
+             --status-active-bg: #dcfce7;
+             --status-active-text: #166534;
+             --status-inactive-bg: #f3f4f6;
+             --status-inactive-text: #374151;
+             --info-box-bg: #dbeafe;
+             --info-box-border: #93c5fd;
+             --info-icon-bg: #3b82f6;
+             --info-icon-color: #ffffff;
+             --info-title-color: #1e3a8a;
+             --info-text-color: #1e40af;
+             --info-code-bg: #bfdbfe;
+             --info-code-text: #1e40af;
+             --success-box-bg: #dcfce7;
+             --success-box-border: #86efac;
+             --success-icon-bg: #16a34a;
+             --success-icon-color: #ffffff;
+             --success-title-color: #166534;
+             --success-text-color: #15803d;
+             --success-code-bg: #bbf7d0;
+             --success-code-text: #15803d;
+             --purple-box-bg: #f3e8ff;
+             --purple-icon-color: #9333ea;
+             --purple-title-color: #581c87;
+             --warning-box-bg: #fef3c7;
+             --warning-icon-color: #d97706;
+             --warning-title-color: #92400e;
+             --gray-100-bg: #f3f4f6;
+             --gray-400-text: #9ca3af;
+             --gray-600-text: #4b5563;
+             --gray-800-text: #1f2937;
+             --gray-900-text: #111827;
+             --red-600-text: #dc2626;
+             --blue-600-text: #2563eb;
+             --green-600-text: #16a34a;
+             --purple-600-text: #9333ea;
+         }
+         
+         :root[data-theme="dark"] {
+             --bg-primary: #0f172a;
+             --bg-secondary: #1e293b;
+             --bg-sidebar: linear-gradient(135deg, #0c4a6e 0%, #1e40af 100%);
+             --text-primary: #f8fafc;
+             --text-secondary: #cbd5e1;
+             --text-sidebar: #f8fafc;
+             --border-color: #334155;
+             --card-bg: #1e293b;
+             --card-border: #334155;
+             --hover-bg: #334155;
+             --input-bg: #0f172a;
+             --code-bg: #334155;
+             --status-active-bg: #065f46;
+             --status-active-text: #d1fae5;
+             --status-inactive-bg: #475569;
+             --status-inactive-text: #cbd5e1;
+             --info-box-bg: #1e3a8a;
+             --info-box-border: #3b82f6;
+             --info-icon-bg: #60a5fa;
+             --info-icon-color: #ffffff;
+             --info-title-color: #dbeafe;
+             --info-text-color: #bfdbfe;
+             --info-code-bg: #2563eb;
+             --info-code-text: #dbeafe;
+             --success-box-bg: #065f46;
+             --success-box-border: #10b981;
+             --success-icon-bg: #34d399;
+             --success-icon-color: #ffffff;
+             --success-title-color: #d1fae5;
+             --success-text-color: #a7f3d0;
+             --success-code-bg: #047857;
+             --success-code-text: #a7f3d0;
+             --purple-box-bg: #581c87;
+             --purple-icon-color: #c084fc;
+             --purple-title-color: #e9d5ff;
+             --warning-box-bg: #92400e;
+             --warning-icon-color: #fbbf24;
+             --warning-title-color: #fef3c7;
+             --gray-100-bg: #334155;
+             --gray-400-text: #94a3b8;
+             --gray-600-text: #cbd5e1;
+             --gray-800-text: #f1f5f9;
+             --gray-900-text: #f8fafc;
+             --red-600-text: #fca5a5;
+             --blue-600-text: #93c5fd;
+             --green-600-text: #86efac;
+             --purple-600-text: #c084fc;
+         }
+         
+         /* Apply theme variables */
+         body {
+             background-color: var(--bg-secondary);
+             color: var(--text-primary);
+         }
+         
+         .gradient-bg {
+             background: var(--bg-sidebar);
+         }
         .card-hover {
             transition: all 0.3s ease;
         }
@@ -58,33 +165,47 @@
         .btn-success {
             @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
         }
-        .form-input {
-            @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
-        }
-        .form-label {
-            @apply block text-sm font-medium text-gray-700 mb-2;
-        }
-        .card {
-            @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6;
-        }
-        .stat-card {
-            @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6 text-center;
-        }
-        .table-container {
-            @apply bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden;
-        }
+                 .form-input {
+             background-color: var(--input-bg);
+             border-color: var(--border-color);
+             color: var(--text-primary);
+             @apply w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
+         }
+                 .form-label {
+             color: var(--text-primary);
+             @apply block text-sm font-medium mb-2;
+         }
+                 .card {
+             background-color: var(--card-bg);
+             border-color: var(--card-border);
+             @apply rounded-xl shadow-lg border p-6;
+         }
+         .stat-card {
+             background-color: var(--card-bg);
+             border-color: var(--card-border);
+             @apply rounded-xl shadow-lg border p-6 text-center;
+         }
+         .table-container {
+             background-color: var(--card-bg);
+             border-color: var(--card-border);
+             @apply rounded-xl shadow-lg border overflow-hidden;
+         }
         .table {
             @apply w-full;
         }
-        .table th {
-            @apply px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
-        }
-        .table td {
-            @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-t border-gray-100;
-        }
-        .table tbody tr:hover {
-            @apply bg-gray-50;
-        }
+                 .table th {
+             background-color: var(--bg-secondary);
+             color: var(--text-secondary);
+             @apply px-6 py-3 text-left text-xs font-medium uppercase tracking-wider;
+         }
+         .table td {
+             color: var(--text-primary);
+             border-color: var(--border-color);
+             @apply px-6 py-4 whitespace-nowrap text-sm border-t;
+         }
+         .table tbody tr:hover {
+             background-color: var(--hover-bg);
+         }
         
         /* Additional form styling */
         select.form-input {
@@ -124,32 +245,123 @@
             @apply fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50;
         }
         
-        .modal-content {
-            @apply relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white;
-        }
+                 .modal-content {
+             background-color: var(--card-bg);
+             border-color: var(--border-color);
+             @apply relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md;
+         }
         
         /* Code styling */
-        code {
-            @apply px-2 py-1 bg-gray-100 text-gray-800 rounded text-sm font-mono;
-        }
+                 code {
+             background-color: var(--code-bg);
+             color: var(--text-primary);
+             @apply px-2 py-1 rounded text-sm font-mono;
+         }
         
-        /* Status badges */
-        .status-active {
-            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800;
-        }
+                 /* Status badges */
+         .status-active {
+             background-color: var(--status-active-bg);
+             color: var(--status-active-text);
+             @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+         }
+         
+         .status-inactive {
+             background-color: var(--status-inactive-bg);
+             color: var(--status-inactive-text);
+             @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+         }
         
-        .status-inactive {
-            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800;
-        }
-        
-        /* Enhanced form styling */
-        .form-input:focus {
-            @apply ring-2 ring-primary-500 border-primary-500;
-        }
-        
-        .form-input:hover {
-            @apply border-gray-400;
-        }
+                 /* Enhanced form styling */
+         .form-input:focus {
+             @apply ring-2 ring-primary-500 border-primary-500;
+         }
+         
+         .form-input:hover {
+             border-color: var(--border-color);
+         }
+         
+         /* Dark theme specific enhancements */
+         [data-theme="dark"] .form-input:hover {
+             border-color: #64748b;
+         }
+         
+         [data-theme="dark"] .card {
+             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+         }
+         
+         [data-theme="dark"] .table-container {
+             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+         }
+         
+         [data-theme="dark"] .sidebar-item:hover {
+             background-color: rgba(59, 130, 246, 0.2);
+         }
+         
+         [data-theme="dark"] .sidebar-item.active {
+             background-color: rgba(59, 130, 246, 0.3);
+             border-left: 4px solid #3b82f6;
+         }
+         
+         /* Better dark theme contrast */
+         [data-theme="dark"] .text-gray-500 {
+             color: #94a3b8 !important;
+         }
+         
+         [data-theme="dark"] .text-gray-600 {
+             color: #cbd5e1 !important;
+         }
+         
+         [data-theme="dark"] .text-gray-900 {
+             color: #f1f5f9 !important;
+         }
+         
+         [data-theme="dark"] .bg-gray-50 {
+             background-color: #1e293b !important;
+         }
+         
+         [data-theme="dark"] .bg-gray-100 {
+             background-color: #334155 !important;
+         }
+         
+         [data-theme="dark"] .border-gray-200 {
+             border-color: #334155 !important;
+         }
+         
+         [data-theme="dark"] .bg-blue-50 {
+             background-color: #1e3a8a !important;
+         }
+         
+         [data-theme="dark"] .bg-green-50 {
+             background-color: #065f46 !important;
+         }
+         
+         [data-theme="dark"] .text-blue-900 {
+             color: #dbeafe !important;
+         }
+         
+         [data-theme="dark"] .text-green-900 {
+             color: #d1fae5 !important;
+         }
+         
+         [data-theme="dark"] .text-green-800 {
+             color: #bbf7d0 !important;
+         }
+         
+         [data-theme="dark"] .bg-green-100 {
+             background-color: #065f46 !important;
+         }
+         
+         [data-theme="dark"] .bg-blue-100 {
+             background-color: #1e3a8a !important;
+         }
+         
+         [data-theme="dark"] .hover\:bg-blue-100:hover {
+             background-color: #1e40af !important;
+         }
+         
+         [data-theme="dark"] .hover\:bg-green-100:hover {
+             background-color: #047857 !important;
+         }
         
         /* Button hover effects */
         .btn-primary:hover {
@@ -183,32 +395,38 @@
             @apply mb-8;
         }
         
-        .page-title {
-            @apply text-3xl font-bold text-gray-900 mb-2;
-        }
-        
-        .page-description {
-            @apply text-gray-600 text-lg;
-        }
+                 .page-title {
+             color: var(--text-primary);
+             @apply text-3xl font-bold mb-2;
+         }
+         
+         .page-description {
+             color: var(--text-secondary);
+             @apply text-lg;
+         }
         
         /* Form section styling */
-        .form-section {
-            @apply bg-gray-50 rounded-lg p-6 border border-gray-200;
-        }
+                 .form-section {
+             background-color: var(--bg-secondary);
+             border-color: var(--border-color);
+             @apply rounded-lg p-6 border;
+         }
         
         /* Enhanced button groups */
-        .button-group {
-            @apply flex space-x-3 pt-6 border-t border-gray-200;
-        }
+                 .button-group {
+             border-color: var(--border-color);
+             @apply flex space-x-3 pt-6 border-t;
+         }
         
         /* Input group styling */
         .input-group {
             @apply space-y-1;
         }
         
-        .input-help-text {
-            @apply text-sm text-gray-500 mt-1;
-        }
+                 .input-help-text {
+             color: var(--text-secondary);
+             @apply text-sm mt-1;
+         }
         
         /* HTML Editor Styles */
         .html-editor-tabs {
@@ -217,48 +435,49 @@
             overflow: hidden;
         }
         
-        .html-editor-tab {
-            flex: 1;
-            padding: 0.75rem;
-            background-color: #f9fafb;
-            border-right: 1px solid #e5e7eb;
-            font-weight: 500;
-            color: #374151;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        
-        .html-editor-tab:hover {
-            background-color: #f3f4f6;
-        }
-        
-        .html-editor-tab.active {
-            background-color: #ffffff;
-            color: #374151;
-        }
+                 .html-editor-tab {
+             flex: 1;
+             padding: 0.75rem;
+             background-color: var(--bg-secondary);
+             border-right: 1px solid var(--border-color);
+             font-weight: 500;
+             color: var(--text-primary);
+             transition: all 0.2s;
+             cursor: pointer;
+         }
+         
+         .html-editor-tab:hover {
+             background-color: var(--bg-primary);
+         }
+         
+         .html-editor-tab.active {
+             background-color: var(--card-bg);
+             color: var(--text-primary);
+         }
         
         .html-editor-tab:last-child {
             border-right: none;
         }
         
-        .html-editor-textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-            outline: none;
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-            background-color: #f8fafc;
-            line-height: 1.5;
-        }
-        
-        .html-editor-textarea:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
+                 .html-editor-textarea {
+             width: 100%;
+             padding: 0.75rem;
+             border: 1px solid var(--border-color);
+             border-radius: 0.5rem;
+             font-size: 0.875rem;
+             transition: all 0.2s;
+             outline: none;
+             resize: vertical;
+             font-family: 'Courier New', monospace;
+             background-color: var(--input-bg);
+             color: var(--text-primary);
+             line-height: 1.5;
+         }
+         
+         .html-editor-textarea:focus {
+             border-color: #3b82f6;
+             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+         }
         
         .html-quick-insert-btn {
             padding: 0.25rem 0.5rem;
@@ -276,26 +495,26 @@
             transform: translateY(-1px);
         }
         
-        .html-preview-container {
-            background-color: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            min-height: 300px;
-            overflow-y: auto;
-        }
+                 .html-preview-container {
+             background-color: var(--card-bg);
+             border: 1px solid var(--border-color);
+             border-radius: 0.5rem;
+             padding: 1.5rem;
+             min-height: 300px;
+             overflow-y: auto;
+         }
         
-        .html-preview-placeholder {
-            text-align: center;
-            color: #6b7280;
-            padding: 3rem 0;
-        }
-        
-        .html-preview-placeholder i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #9ca3af;
-        }
+                 .html-preview-placeholder {
+             text-align: center;
+             color: var(--text-secondary);
+             padding: 3rem 0;
+         }
+         
+         .html-preview-placeholder i {
+             font-size: 3rem;
+             margin-bottom: 1rem;
+             color: var(--text-secondary);
+         }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -343,18 +562,25 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Bar -->
-            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                         <!-- Top Bar -->
+             <header class="shadow-sm border-b px-6 py-4" style="background-color: var(--bg-primary); border-color: var(--border-color);">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-2xl font-bold text-gray-900">
-                        {% block page_title %}Dashboard{% endblock %}
-                    </h2>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-2 text-sm text-gray-600">
-                            <i class="fas fa-user-circle"></i>
-                            <span>Admin</span>
-                        </div>
-                    </div>
+                                         <h2 class="text-2xl font-bold" style="color: var(--text-primary);">
+                         {% block page_title %}Dashboard{% endblock %}
+                     </h2>
+                                         <div class="flex items-center space-x-4">
+                         <button onclick="toggleTheme()" id="theme-toggle" 
+                                 style="display: inline-flex; align-items: center; justify-content: center; background-color: #f3f4f6; color: #374151; font-weight: 500; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #d1d5db; cursor: pointer; transition: all 0.2s; font-size: 0.875rem;"
+                                 onmouseenter="this.style.backgroundColor='#e5e7eb'"
+                                 onmouseleave="this.style.backgroundColor='#f3f4f6'"
+                                 title="Toggle theme">
+                             <i class="fas fa-moon" id="theme-icon"></i>
+                         </button>
+                         <div class="flex items-center space-x-2 text-sm text-gray-600">
+                             <i class="fas fa-user-circle"></i>
+                             <span>Admin</span>
+                         </div>
+                     </div>
                 </div>
             </header>
 
@@ -397,16 +623,54 @@
             }, 3000);
         }
 
-        // Auto-hide alerts after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.style.opacity = '0';
-                    setTimeout(() => alert.remove(), 300);
-                }, 5000);
-            });
-        });
+                 // Auto-hide alerts after 5 seconds
+         document.addEventListener('DOMContentLoaded', function() {
+             const alerts = document.querySelectorAll('.alert');
+             alerts.forEach(alert => {
+                 setTimeout(() => {
+                     alert.style.opacity = '0';
+                     setTimeout(() => alert.remove(), 300);
+                 }, 5000);
+             });
+             
+             // Initialize theme
+             initializeTheme();
+         });
+         
+         // Theme toggle functionality
+         function toggleTheme() {
+             const currentTheme = document.documentElement.getAttribute('data-theme');
+             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+             
+             document.documentElement.setAttribute('data-theme', newTheme);
+             localStorage.setItem('theme', newTheme);
+             
+             updateThemeUI(newTheme);
+             showToast(`Switched to ${newTheme} theme!`, 'success');
+         }
+         
+         function initializeTheme() {
+             const savedTheme = localStorage.getItem('theme') || 'light';
+             document.documentElement.setAttribute('data-theme', savedTheme);
+             updateThemeUI(savedTheme);
+         }
+         
+         function updateThemeUI(theme) {
+             const themeIcon = document.getElementById('theme-icon');
+             const themeToggle = document.getElementById('theme-toggle');
+             
+             if (theme === 'dark') {
+                 themeIcon.className = 'fas fa-sun';
+                 themeToggle.style.backgroundColor = '#1e40af';
+                 themeToggle.style.color = '#f8fafc';
+                 themeToggle.style.borderColor = '#3b82f6';
+             } else {
+                 themeIcon.className = 'fas fa-moon';
+                 themeToggle.style.backgroundColor = '#f3f4f6';
+                 themeToggle.style.color = '#374151';
+                 themeToggle.style.borderColor = '#d1d5db';
+             }
+         }
     </script>
 </body>
 </html>
