@@ -59,7 +59,7 @@
             @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
         }
         .form-input {
-            @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+            @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
         }
         .form-label {
             @apply block text-sm font-medium text-gray-700 mb-2;
@@ -84,6 +84,130 @@
         }
         .table tbody tr:hover {
             @apply bg-gray-50;
+        }
+        
+        /* Additional form styling */
+        select.form-input {
+            @apply appearance-none bg-white;
+        }
+        
+        textarea.form-input {
+            @apply resize-vertical;
+        }
+        
+        /* Checkbox styling */
+        input[type="checkbox"] {
+            @apply w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 focus:ring-2;
+        }
+        
+        /* Button enhancements */
+        .btn-primary, .btn-secondary, .btn-danger, .btn-success {
+            @apply inline-flex items-center justify-center;
+        }
+        
+        /* Form spacing */
+        .form-group {
+            @apply space-y-2;
+        }
+        
+        /* Card enhancements */
+        .card {
+            @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6 transition-all duration-200;
+        }
+        
+        .card:hover {
+            @apply shadow-xl;
+        }
+        
+        /* Modal styling */
+        .modal-overlay {
+            @apply fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50;
+        }
+        
+        .modal-content {
+            @apply relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white;
+        }
+        
+        /* Code styling */
+        code {
+            @apply px-2 py-1 bg-gray-100 text-gray-800 rounded text-sm font-mono;
+        }
+        
+        /* Status badges */
+        .status-active {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800;
+        }
+        
+        .status-inactive {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800;
+        }
+        
+        /* Enhanced form styling */
+        .form-input:focus {
+            @apply ring-2 ring-primary-500 border-primary-500;
+        }
+        
+        .form-input:hover {
+            @apply border-gray-400;
+        }
+        
+        /* Button hover effects */
+        .btn-primary:hover {
+            @apply transform scale-105;
+        }
+        
+        .btn-secondary:hover {
+            @apply transform scale-105;
+        }
+        
+        .btn-danger:hover {
+            @apply transform scale-105;
+        }
+        
+        .btn-success:hover {
+            @apply transform scale-105;
+        }
+        
+        /* Table enhancements */
+        .table tbody tr {
+            @apply transition-colors duration-150;
+        }
+        
+        /* Card shadows */
+        .card {
+            @apply shadow-lg hover:shadow-xl;
+        }
+        
+        /* Enhanced spacing and typography */
+        .page-header {
+            @apply mb-8;
+        }
+        
+        .page-title {
+            @apply text-3xl font-bold text-gray-900 mb-2;
+        }
+        
+        .page-description {
+            @apply text-gray-600 text-lg;
+        }
+        
+        /* Form section styling */
+        .form-section {
+            @apply bg-gray-50 rounded-lg p-6 border border-gray-200;
+        }
+        
+        /* Enhanced button groups */
+        .button-group {
+            @apply flex space-x-3 pt-6 border-t border-gray-200;
+        }
+        
+        /* Input group styling */
+        .input-group {
+            @apply space-y-1;
+        }
+        
+        .input-help-text {
+            @apply text-sm text-gray-500 mt-1;
         }
     </style>
 </head>

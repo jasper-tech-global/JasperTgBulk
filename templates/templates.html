@@ -4,62 +4,97 @@
 {% block content %}
 <div class="space-y-6">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="page-header flex items-center justify-between">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Email Templates</h1>
-            <p class="text-gray-600">Create and manage email templates that customers can use via Telegram</p>
+            <h1 class="page-title">Email Templates</h1>
+            <p class="page-description">Create and manage email templates that customers can use via Telegram</p>
         </div>
-        <button onclick="toggleForm()" class="btn-primary">
+        <button onclick="toggleForm()" 
+                style="display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; transition: all 0.3s; font-size: 0.875rem; box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);"
+                onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px 0 rgba(59, 130, 246, 0.5)'"
+                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px 0 rgba(59, 130, 246, 0.39)'">
             <i class="fas fa-plus mr-2"></i>Add Template
         </button>
     </div>
 
     <!-- Add Template Form -->
     <div id="template-form" class="card" style="display: none;">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Email Template</h3>
-        <form method="post" action="/templates" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="form-label">Template Code</label>
-                    <input type="text" name="code" required class="form-input" placeholder="e.g., welcome, invoice, newsletter">
-                    <p class="text-sm text-gray-500 mt-1">The code customers will use in Telegram (e.g., /welcome)</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Add New Email Template</h3>
+        <form method="post" action="/templates" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="input-group">
+                    <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Template Code</label>
+                    <input type="text" name="code" required 
+                           style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
+                           onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                           onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                           onmouseenter="this.style.borderColor='#9ca3af'"
+                           onmouseleave="this.style.borderColor='#d1d5db'"
+                           placeholder="e.g., welcome, invoice, newsletter">
+                    <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">The code customers will use in Telegram (e.g., /welcome)</p>
                 </div>
-                <div>
-                    <label class="form-label">SMTP Profile</label>
-                    <select name="smtp_profile_id" required class="form-input">
+                <div class="input-group">
+                    <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">SMTP Profile</label>
+                    <select name="smtp_profile_id" required 
+                            style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none; background-color: white; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M5 6l5 5 5-5 2 1-7 7-7-7 2-1z" fill="%236b7280"/></svg>'); background-repeat: no-repeat; background-position: right 0.5rem center; padding-right: 2.5rem;"
+                            onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                            onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                            onmouseenter="this.style.borderColor='#9ca3af'"
+                            onmouseleave="this.style.borderColor='#d1d5db'">
                         <option value="">Select SMTP Profile</option>
                         {% for smtp in smtp_rows %}
                         <option value="{{ smtp.id }}">{{ smtp.name }} ({{ smtp.host }})</option>
                         {% endfor %}
                     </select>
-                    <p class="text-sm text-gray-500 mt-1">Which email server to use for this template</p>
+                    <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Which email server to use for this template</p>
                 </div>
             </div>
 
-            <div>
-                <label class="form-label">Subject Template</label>
-                <input type="text" name="subject_template" required class="form-input" placeholder="e.g., Welcome to {company_name}!">
-                <p class="text-sm text-gray-500 mt-1">Email subject with variables in { } brackets</p>
+            <div class="input-group">
+                <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Subject Template</label>
+                <input type="text" name="subject_template" required 
+                       style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
+                       onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                       onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                       onmouseenter="this.style.borderColor='#9ca3af'"
+                       onmouseleave="this.style.borderColor='#d1d5db'"
+                       placeholder="e.g., Welcome to {company_name}!">
+                <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Email subject with variables in { } brackets</p>
             </div>
 
-            <div>
-                <label class="form-label">Body Template (HTML)</label>
-                <textarea name="body_template" required rows="8" class="form-input" placeholder="<h1>Welcome {name}!</h1><p>Thank you for joining {company_name}...</p>"></textarea>
-                <p class="text-sm text-gray-500 mt-1">HTML email body with variables in { } brackets</p>
+            <div class="input-group">
+                <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Body Template (HTML)</label>
+                <textarea name="body_template" required rows="8" 
+                          style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none; resize: vertical; font-family: 'Courier New', monospace;"
+                          onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                          onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                          onmouseenter="this.style.borderColor='#9ca3af'"
+                          onmouseleave="this.style.borderColor='#d1d5db'"
+                          placeholder="<h1>Welcome {name}!</h1><p>Thank you for joining {company_name}...</p>"></textarea>
+                <p class="input-help-text" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">HTML email body with variables in { } brackets</p>
             </div>
 
-            <div class="flex items-center space-x-6">
-                <label class="flex items-center">
-                    <input type="checkbox" name="active" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-700">Active (customers can use this template)</span>
+            <div class="flex items-center space-x-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <label class="flex items-center cursor-pointer">
+                    <input type="checkbox" name="active" 
+                           style="width: 1rem; height: 1rem; margin-right: 0.75rem; color: #3b82f6; border: 1px solid #d1d5db; border-radius: 0.25rem; cursor: pointer;"
+                           onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                           onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'">
+                    <span style="font-size: 0.875rem; color: #374151; font-weight: 500;">Active (customers can use this template)</span>
                 </label>
             </div>
 
-            <div class="flex space-x-3">
-                <button type="submit" class="btn-success">
+            <div class="button-group" style="display: flex; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                <button type="submit" 
+                        style="display: inline-flex; align-items: center; justify-content: center; background-color: #059669; color: white; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; font-size: 0.875rem;"
+                        onmouseenter="this.style.backgroundColor='#047857'; this.style.transform='scale(1.05)'"
+                        onmouseleave="this.style.backgroundColor='#059669'; this.style.transform='scale(1)'">
                     <i class="fas fa-save mr-2"></i>Save Template
                 </button>
-                <button type="button" onclick="toggleForm()" class="btn-secondary">
+                <button type="button" onclick="toggleForm()" 
+                        style="display: inline-flex; align-items: center; justify-content: center; background-color: #4b5563; color: white; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; font-size: 0.875rem;"
+                        onmouseenter="this.style.backgroundColor='#374151'; this.style.transform='scale(1.05)'"
+                        onmouseleave="this.style.backgroundColor='#4b5563'; this.style.transform='scale(1)'">
                     <i class="fas fa-times mr-2"></i>Cancel
                 </button>
             </div>
@@ -101,8 +136,8 @@
                     </td>
                     <td>
                         <div class="flex items-center space-x-2">
-                            <code class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-sm font-mono">/{{ template.code }}</code>
-                            <button onclick="copyToClipboard('/{{ template.code }}')" class="text-gray-400 hover:text-gray-600" title="Copy Command">
+                            <code>/{{ template.code }}</code>
+                            <button onclick="copyToClipboard('/{{ template.code }}')" class="text-gray-400 hover:text-gray-600 transition-colors duration-200" title="Copy Command">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -124,11 +159,11 @@
                     </td>
                     <td>
                         {% if template.active %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <span class="status-active">
                                 <i class="fas fa-check-circle mr-1"></i>Active
                             </span>
                         {% else %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <span class="status-inactive">
                                 <i class="fas fa-pause-circle mr-1"></i>Inactive
                             </span>
                         {% endif %}
@@ -175,7 +210,7 @@
                 <h4 class="font-medium text-green-900 mb-2">How customers use templates</h4>
                 <p class="text-sm text-green-800 mb-2">Customers can use templates in Telegram with this format:</p>
                 <div class="bg-green-100 p-3 rounded-lg">
-                    <code class="text-green-800 font-mono">/{{ "template_code" }} recipient@email.com key1=value1 key2=value2</code>
+                    <code class="text-green-800">/{{ "template_code" }} recipient@email.com key1=value1 key2=value2</code>
                 </div>
                 <p class="text-sm text-green-800 mt-2">Example: <code class="bg-green-100 px-1 rounded">/welcome john@example.com name=John company=ABC Corp</code></p>
             </div>
@@ -184,8 +219,8 @@
 </div>
 
 <!-- Template Preview Modal -->
-<div id="preview-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" style="display: none;">
-    <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+<div id="preview-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-medium text-gray-900">Template Preview</h3>

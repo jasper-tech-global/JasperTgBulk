@@ -4,38 +4,59 @@
 {% block content %}
 <div class="space-y-6">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="page-header flex items-center justify-between">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Customer Management</h1>
-            <p class="text-gray-600">Manage who can use your Telegram bot to send emails</p>
+            <h1 class="page-title">Customer Management</h1>
+            <p class="page-description">Manage who can use your Telegram bot to send emails</p>
         </div>
-        <button onclick="toggleForm()" class="btn-primary">
+        <button onclick="toggleForm()" 
+                style="display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; transition: all 0.3s; font-size: 0.875rem; box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);"
+                onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px 0 rgba(59, 130, 246, 0.5)'"
+                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px 0 rgba(59, 130, 246, 0.39)'">
             <i class="fas fa-user-plus mr-2"></i>Add Customer
         </button>
     </div>
 
     <!-- Add Customer Form -->
     <div id="customer-form" class="card" style="display: none;">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Customer</h3>
-        <form method="post" action="/customers" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Add New Customer</h3>
+        <form method="post" action="/customers" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="form-label">Telegram Chat ID</label>
-                    <input type="number" name="chat_id" required class="form-input" placeholder="e.g., 123456789">
-                    <p class="text-sm text-gray-500 mt-1">The unique chat ID from Telegram</p>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Telegram Chat ID</label>
+                    <input type="number" name="chat_id" required 
+                           style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
+                           onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                           onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                           onmouseenter="this.style.borderColor='#9ca3af'"
+                           onmouseleave="this.style.borderColor='#d1d5db'"
+                           placeholder="e.g., 123456789">
+                    <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">The unique chat ID from Telegram</p>
                 </div>
                 <div>
-                    <label class="form-label">Customer Label</label>
-                    <input type="text" name="label" class="form-input" placeholder="e.g., John Doe, Company ABC">
-                    <p class="text-sm text-gray-500 mt-1">Optional label to identify the customer</p>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Customer Label</label>
+                    <input type="text" name="label" 
+                           style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
+                           onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                           onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                           onmouseenter="this.style.borderColor='#9ca3af'"
+                           onmouseleave="this.style.borderColor='#d1d5db'"
+                           placeholder="e.g., John Doe, Company ABC">
+                    <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Optional label to identify the customer</p>
                 </div>
             </div>
 
-            <div class="flex space-x-3">
-                <button type="submit" class="btn-success">
+            <div style="display: flex; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                <button type="submit" 
+                        style="display: inline-flex; align-items: center; justify-content: center; background-color: #059669; color: white; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; font-size: 0.875rem;"
+                        onmouseenter="this.style.backgroundColor='#047857'; this.style.transform='scale(1.05)'"
+                        onmouseleave="this.style.backgroundColor='#059669'; this.style.transform='scale(1)'">
                     <i class="fas fa-save mr-2"></i>Add Customer
                 </button>
-                <button type="button" onclick="toggleForm()" class="btn-secondary">
+                <button type="button" onclick="toggleForm()" 
+                        style="display: inline-flex; align-items: center; justify-content: center; background-color: #4b5563; color: white; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; transition: all 0.2s; font-size: 0.875rem;"
+                        onmouseenter="this.style.backgroundColor='#374151'; this.style.transform='scale(1.05)'"
+                        onmouseleave="this.style.backgroundColor='#4b5563'; this.style.transform='scale(1)'">
                     <i class="fas fa-times mr-2"></i>Cancel
                 </button>
             </div>
