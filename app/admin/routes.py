@@ -84,6 +84,45 @@ async def smtp_create(
     return RedirectResponse("/smtp", status_code=status.HTTP_302_FOUND)
 
 
+@router.post("/smtp/{row_id}/edit")
+async def smtp_edit(
+    row_id: int,
+    name: str = Form(...),
+    host: str = Form(...),
+    port: int = Form(587),
+    username: str = Form(...),
+    password: str = Form(""),
+    use_tls: bool = Form(False),
+    use_starttls: bool = Form(True),
+    from_name: str = Form(""),
+    from_email: str = Form(...),
+    session: AsyncSession = Depends(get_session),
+    admin=Depends(require_admin),
+):
+    smtp_profile = await session.get(SmtpProfile, row_id)
+    if not smtp_profile:
+        raise HTTPException(status_code=404, detail="SMTP profile not found")
+    
+    # Update fields
+    smtp_profile.name = name
+    smtp_profile.host = host
+    smtp_profile.port = port
+    smtp_profile.username = username
+    smtp_profile.use_tls = use_tls
+    smtp_profile.use_starttls = use_starttls
+    smtp_profile.from_name = from_name
+    smtp_profile.from_email = from_email
+    
+    # Only update password if a new one is provided
+    if password:
+        box = SecretBox(settings.fernet_key)
+        enc = box.encrypt(password)
+        smtp_profile.encrypted_password = enc
+    
+    await session.commit()
+    return RedirectResponse("/smtp", status_code=status.HTTP_302_FOUND)
+
+
 @router.post("/smtp/{row_id}/delete")
 async def smtp_delete(row_id: int, session: AsyncSession = Depends(get_session), admin=Depends(require_admin)):
     await session.execute(delete(SmtpProfile).where(SmtpProfile.id == row_id))
