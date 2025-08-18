@@ -1,6 +1,6 @@
 from __future__ import annotations
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, Boolean, DateTime, func, Text, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, Integer, Boolean, DateTime, func, Text, UniqueConstraint
 from app.core.database import Base
 
 
@@ -12,8 +12,5 @@ class Template(Base):
     code: Mapped[str] = mapped_column(String(64), nullable=False)
     subject_template: Mapped[str] = mapped_column(String(500), nullable=False)
     body_template: Mapped[str] = mapped_column(Text, nullable=False)
-    smtp_profile_id: Mapped[int] = mapped_column(Integer, ForeignKey("smtp_profile.id"), nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-    smtp_profile = relationship("SmtpProfile", back_populates="templates")

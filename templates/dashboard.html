@@ -17,43 +17,48 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="stat-card card-hover">
-                         <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style="background-color: var(--gray-100-bg);">
-                 <i class="fas fa-users text-2xl" style="color: var(--blue-600-text);"></i>
-             </div>
-                         <h3 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">{{ customers }}</h3>
-             <p style="color: var(--text-secondary);">Total Customers</p>
-            <div class="mt-4">
-                                 <a href="/customers" class="text-sm font-medium" style="color: var(--blue-600-text);">
-                     Manage Customers <i class="fas fa-arrow-right ml-1"></i>
-                 </a>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Customers -->
+        <div class="stat-card" style="background: var(--bg-secondary); border-color: var(--border-color);">
+            <div class="stat-icon" style="background: var(--blue-600-bg);">
+                <i class="fas fa-users" style="color: var(--blue-600-text);"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number" style="color: var(--text-primary);">{{ total_customers }}</h3>
+                <p class="stat-label" style="color: var(--text-secondary);">Total Customers</p>
             </div>
         </div>
 
-        <div class="stat-card card-hover">
-                         <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style="background-color: var(--gray-100-bg);">
-                 <i class="fas fa-envelope text-2xl" style="color: var(--green-600-text);"></i>
-             </div>
-                         <h3 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">{{ smtps }}</h3>
-             <p style="color: var(--text-secondary);">SMTP Profiles</p>
-            <div class="mt-4">
-                                 <a href="/smtp" class="text-sm font-medium" style="color: var(--green-600-text);">
-                     Manage SMTP <i class="fas fa-arrow-right ml-1"></i>
-                 </a>
+        <!-- Total SMTP Profiles -->
+        <div class="stat-card" style="background: var(--bg-secondary); border-color: var(--border-color);">
+            <div class="stat-icon" style="background: var(--green-600-bg);">
+                <i class="fas fa-envelope" style="color: var(--green-600-text);"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number" style="color: var(--text-primary);">{{ total_smtp_profiles }}</h3>
+                <p class="stat-label" style="color: var(--text-secondary);">SMTP Profiles</p>
             </div>
         </div>
 
-        <div class="stat-card card-hover">
-                         <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style="background-color: var(--gray-100-bg);">
-                 <i class="fas fa-file-alt text-2xl" style="color: var(--purple-600-text);"></i>
-             </div>
-                         <h3 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">{{ templates }}</h3>
-             <p style="color: var(--text-secondary);">Email Templates</p>
-            <div class="mt-4">
-                                 <a href="/templates" class="text-sm font-medium" style="color: var(--purple-600-text);">
-                     Manage Templates <i class="fas fa-arrow-right ml-1"></i>
-                 </a>
+        <!-- Active SMTP Profiles -->
+        <div class="stat-card" style="background: var(--bg-secondary); border-color: var(--border-color);">
+            <div class="stat-icon" style="background: var(--orange-600-bg);">
+                <i class="fas fa-check-circle" style="color: var(--orange-600-text);"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number" style="color: var(--text-primary);">{{ active_smtp_profiles }}</h3>
+                <p class="stat-label" style="color: var(--text-secondary);">Active SMTP</p>
+            </div>
+        </div>
+
+        <!-- Total Templates -->
+        <div class="stat-card" style="background: var(--bg-secondary); border-color: var(--border-color);">
+            <div class="stat-icon" style="background: var(--purple-600-bg);">
+                <i class="fas fa-file-alt" style="color: var(--purple-600-text);"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number" style="color: var(--text-primary);">{{ total_templates }}</h3>
+                <p class="stat-label" style="color: var(--text-secondary);">Email Templates</p>
             </div>
         </div>
     </div>

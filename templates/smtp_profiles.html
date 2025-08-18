@@ -92,6 +92,18 @@
                     </label>
                 </div>
             </div>
+            
+            <!-- Profile Status -->
+            <div class="p-6 rounded-xl border-2" style="background: var(--bg-secondary); border-color: var(--border-color);">
+                <h4 class="text-lg font-semibold mb-4 flex items-center" style="color: var(--text-primary);">
+                    <i class="fas fa-toggle-on mr-2" style="color: var(--purple-600-text);"></i>Profile Status
+                </h4>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" name="active" checked class="form-checkbox-enhanced">
+                    <span class="text-sm font-medium" style="color: var(--text-primary);">Active (Available for random selection)</span>
+                </div>
+                <p class="text-xs mt-2" style="color: var(--text-secondary);">Active profiles will be randomly selected for sending emails</p>
+            </div>
 
             <!-- Enhanced Form Actions -->
             <div class="flex items-center justify-end space-x-4 pt-6 border-t" style="border-color: var(--border-color);">
@@ -132,6 +144,9 @@
                         </th>
                         <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
                             <i class="fas fa-shield-alt mr-2"></i>Security
+                        </th>
+                        <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
+                            <i class="fas fa-toggle-on mr-2"></i>Status
                         </th>
                         <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
                             <i class="fas fa-cogs mr-2"></i>Actions
@@ -192,9 +207,26 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
+                            {% if profile.active %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background: var(--status-active-bg); color: var(--status-active-text);">
+                                <i class="fas fa-check-circle mr-1"></i>Active
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background: var(--status-inactive-bg); color: var(--status-inactive-text);">
+                                <i class="fas fa-pause-circle mr-1"></i>Inactive
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
                             <div class="flex items-center space-x-2">
                                 <button onclick="testSMTP({{ profile.id }})" class="btn-success text-sm px-3 py-2">
                                     <i class="fas fa-paper-plane mr-1"></i>Test
+                                </button>
+                                <button onclick="runDiagnostics({{ profile.id }})" class="btn-primary text-sm px-3 py-2">
+                                    <i class="fas fa-stethoscope mr-1"></i>Diagnose
+                                </button>
+                                <button onclick="toggleActive({{ profile.id }}, {{ profile.active|lower }})" class="btn-secondary text-sm px-3 py-2">
+                                    <i class="fas fa-{{ 'pause' if profile.active else 'play' }} mr-1"></i>{{ 'Deactivate' if profile.active else 'Activate' }}
                                 </button>
                                 <button onclick="editSMTP({{ profile.id }}, '{{ profile.name }}', '{{ profile.host }}', {{ profile.port }}, '{{ profile.username }}', '{{ profile.from_name }}', '{{ profile.from_email }}', {{ profile.use_tls|lower }}, {{ profile.use_starttls|lower }})" class="btn-primary text-sm px-3 py-2">
                                     <i class="fas fa-edit mr-1"></i>Edit
@@ -230,23 +262,68 @@
 
 <!-- Enhanced SMTP Test Modal -->
 <div id="test-modal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50" style="display: none;">
-    <div class="relative top-20 mx-auto p-8 border w-96 shadow-2xl rounded-2xl" style="background: var(--card-bg); border-color: var(--card-border);">
+    <div class="relative top-20 mx-auto p-8 border w-full max-w-2xl shadow-2xl rounded-2xl" style="background: var(--card-bg); border-color: var(--card-border);">
         <div class="text-center">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
                 <i class="fas fa-paper-plane text-2xl text-white"></i>
             </div>
-            <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Test SMTP Connection</h3>
+            <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Test SMTP Connection & Inbox Delivery</h3>
             <div class="mb-6">
-                <p class="text-sm mb-4" style="color: var(--text-secondary);">Enter a test email address to verify your SMTP configuration.</p>
+                <p class="text-sm mb-4" style="color: var(--text-secondary);">Enter a test email address to verify your SMTP configuration and inbox delivery optimization.</p>
                 <input type="email" id="test-email" placeholder="test@example.com" class="form-input-enhanced w-full">
             </div>
+            
+            <!-- Inbox Delivery Optimization Info -->
+            <div class="mb-6 p-4 rounded-xl" style="background: var(--info-box-bg); border: 1px solid var(--info-box-border);">
+                <h4 class="font-semibold mb-2 flex items-center" style="color: var(--info-title-color);">
+                    <i class="fas fa-rocket mr-2"></i>Inbox Delivery Optimization
+                </h4>
+                <div class="text-sm space-y-1" style="color: var(--info-text-color);">
+                    <div>✅ Professional email headers for authentication</div>
+                    <div>✅ DKIM signature support</div>
+                    <div>✅ SPF and domain verification</div>
+                    <div>✅ Reputation management headers</div>
+                    <div>✅ HTML and text alternatives</div>
+                    <div>✅ Professional MIME formatting</div>
+                </div>
+            </div>
+            
             <div class="flex flex-col space-y-3">
                 <button id="send-test" class="btn-primary w-full py-3">
-                    <i class="fas fa-paper-plane mr-2"></i>Send Test Email
+                    <i class="fas fa-paper-plane mr-2"></i>Send Test Email (Inbox Optimized)
                 </button>
                 <button onclick="closeTestModal()" class="btn-secondary w-full py-3">
                     Cancel
                 </button>
+            </div>
+            
+            <!-- Test Results -->
+            <div id="test-results" class="mt-6" style="display: none;">
+                <div id="test-success" class="p-4 rounded-xl mb-4" style="background: var(--success-box-bg); border: 1px solid var(--success-box-border); display: none;">
+                    <h4 class="font-semibold mb-2 flex items-center" style="color: var(--success-title-color);">
+                        <i class="fas fa-check-circle mr-2"></i>Test Successful!
+                    </h4>
+                    <div class="text-sm space-y-1" style="color: var(--success-text-color);">
+                        <div id="success-message"></div>
+                        <div id="message-id" class="mt-2 p-2 rounded" style="background: var(--success-code-bg); color: var(--success-code-text); font-family: monospace; font-size: 0.8rem;"></div>
+                    </div>
+                </div>
+                
+                <div id="test-error" class="p-4 rounded-xl mb-4" style="background: var(--warning-box-bg); border: 1px solid var(--warning-box-border); display: none;">
+                    <h4 class="font-semibold mb-2 flex items-center" style="color: var(--warning-title-color);">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Test Failed
+                    </h4>
+                    <div class="text-sm" style="color: var(--warning-title-color);">
+                        <div id="error-message"></div>
+                    </div>
+                </div>
+                
+                <div id="test-recommendations" class="p-4 rounded-xl" style="background: var(--info-box-bg); border: 1px solid var(--info-box-border); display: none;">
+                    <h4 class="font-semibold mb-2 flex items-center" style="color: var(--info-title-color);">
+                        <i class="fas fa-lightbulb mr-2"></i>Recommendations
+                    </h4>
+                    <div id="recommendations-list" class="text-sm space-y-1" style="color: var(--info-text-color);"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -391,6 +468,38 @@ function editSMTP(profileId, name, host, port, username, fromName, fromEmail, us
 function closeEditModal() {
     document.getElementById('edit-modal').style.display = 'none';
     currentProfileId = null;
+}
+
+function closeDiagnosticsModal() {
+    document.getElementById('diagnostics-modal').style.display = 'none';
+    currentProfileId = null;
+}
+
+function toggleActive(profileId, currentStatus) {
+    const action = currentStatus ? 'deactivate' : 'activate';
+    if (!confirm(`Are you sure you want to ${action} this SMTP profile?`)) {
+        return;
+    }
+    
+    fetch(`/api/smtp/${profileId}/toggle-active`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            // Reload page to show updated status
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast('Error: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        showToast('Error toggling status: ' + error.message, 'error');
+    });
 }
 
 document.getElementById('send-test').addEventListener('click', function() {

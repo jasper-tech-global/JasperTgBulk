@@ -22,45 +22,35 @@
                  <h3 class="text-lg font-semibold mb-6" style="color: var(--text-primary);">Add New Email Template</h3>
         <form method="post" action="/templates" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="input-group">
-                                         <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Template Code</label>
-                    <input type="text" name="code" required 
-                           style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
-                           onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
-                           onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
-                           onmouseenter="this.style.borderColor='#9ca3af'"
-                           onmouseleave="this.style.borderColor='#d1d5db'"
-                           placeholder="e.g., welcome, invoice, newsletter">
-                                         <p class="input-help-text" style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-secondary);">The code customers will use in Telegram (e.g., /welcome)</p>
-                </div>
-                <div class="input-group">
-                                         <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">SMTP Profile</label>
-                    <select name="smtp_profile_id" required 
-                            style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none; background-color: white; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M5 6l5 5 5-5 2 1-7 7-7-7 2-1z" fill="%236b7280"/></svg>'); background-repeat: no-repeat; background-position: right 0.5rem center; padding-right: 2.5rem;"
-                            onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
-                            onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
-                            onmouseenter="this.style.borderColor='#9ca3af'"
-                            onmouseleave="this.style.borderColor='#d1d5db'">
-                        <option value="">Select SMTP Profile</option>
-                        {% for smtp in smtp_rows %}
-                        <option value="{{ smtp.id }}">{{ smtp.name }} ({{ smtp.host }})</option>
-                        {% endfor %}
-                    </select>
-                                         <p class="input-help-text" style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-secondary);">Which email server to use for this template</p>
-                </div>
-            </div>
-
-            <div class="input-group">
-                                 <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Subject Template</label>
-                <input type="text" name="subject_template" required 
-                       style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; outline: none;"
-                       onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
-                       onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
-                       onmouseenter="this.style.borderColor='#9ca3af'"
-                       onmouseleave="this.style.borderColor='#d1d5db'"
-                       placeholder="e.g., Welcome to {company_name}!">
-                                 <p class="input-help-text" style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-secondary);">Email subject with variables in { } brackets</p>
-            </div>
+                 <div class="space-y-2">
+                     <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                         <i class="fas fa-file-alt mr-2" style="color: var(--purple-600-text);"></i>Template Code
+                     </label>
+                     <input type="text" name="code" required class="form-input-enhanced" placeholder="e.g., welcome_email, newsletter, promotion">
+                     <p class="text-xs" style="color: var(--text-secondary);">Unique identifier for this template</p>
+                 </div>
+                 
+                 <div class="space-y-2">
+                     <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                         <i class="fas fa-heading mr-2" style="color: var(--blue-600-text);"></i>Subject Template
+                     </label>
+                     <input type="text" name="subject_template" required class="form-input-enhanced" placeholder="e.g., Welcome to {company_name}!">
+                     <p class="text-xs" style="color: var(--text-secondary);">Email subject line (use { } for variables)</p>
+                 </div>
+                 
+                 <!-- SMTP Information Box -->
+                 <div class="p-4 rounded-xl" style="background: var(--info-box-bg); border: 1px solid var(--info-box-border);">
+                     <h4 class="font-semibold mb-2 flex items-center" style="color: var(--info-title-color);">
+                         <i class="fas fa-info-circle mr-2"></i>Smart SMTP Selection
+                     </h4>
+                     <div class="text-sm space-y-1" style="color: var(--info-text-color);">
+                         <div>✅ <strong>No SMTP profile linking required!</strong></div>
+                         <div>✅ System automatically selects random SMTP profiles for each email</div>
+                         <div>✅ Load balancing across all active SMTP servers</div>
+                         <div>✅ Better deliverability and rate limit avoidance</div>
+                         <div>✅ Automatic inbox delivery optimization applied</div>
+                     </div>
+                 </div>
 
             <div class="input-group">
                                  <label class="form-label" style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Body Template (HTML)</label>
@@ -218,13 +208,19 @@
     <div class="table-container">
         <table class="table">
             <thead>
-                <tr>
-                    <th>Template</th>
-                    <th>Code</th>
-                    <th>SMTP Profile</th>
-                    <th>Subject</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                <tr style="background: var(--bg-secondary);">
+                    <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
+                        <i class="fas fa-file-alt mr-2"></i>Template
+                    </th>
+                    <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
+                        <i class="fas fa-heading mr-2"></i>Subject
+                    </th>
+                    <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
+                        <i class="fas fa-code mr-2"></i>Status
+                    </th>
+                    <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
+                        <i class="fas fa-cogs mr-2"></i>Actions
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -257,29 +253,16 @@
                     </td>
                     <td>
                         <div class="text-sm">
-                            {% if template.smtp_profile %}
-                                                             <div class="font-medium" style="color: var(--text-primary);">{{ template.smtp_profile.name }}</div>
-                             <div style="color: var(--text-secondary);">{{ template.smtp_profile.host }}</div>
+                            {% if template.active %}
+                                <span class="status-active">
+                                    <i class="fas fa-check-circle mr-1"></i>Active
+                                </span>
                             {% else %}
-                                <span style="color: var(--red-600-text);">No SMTP Profile</span>
+                                <span class="status-inactive">
+                                    <i class="fas fa-pause-circle mr-1"></i>Inactive
+                                </span>
                             {% endif %}
                         </div>
-                    </td>
-                    <td>
-                                                 <div class="text-sm max-w-xs truncate" title="{{ template.subject_template }}" style="color: var(--text-primary);">
-                             {{ template.subject_template }}
-                         </div>
-                    </td>
-                    <td>
-                        {% if template.active %}
-                            <span class="status-active">
-                                <i class="fas fa-check-circle mr-1"></i>Active
-                            </span>
-                        {% else %}
-                            <span class="status-inactive">
-                                <i class="fas fa-pause-circle mr-1"></i>Inactive
-                            </span>
-                        {% endif %}
                     </td>
                     <td>
                         <div class="flex space-x-2">
