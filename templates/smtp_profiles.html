@@ -1,473 +1,509 @@
 {% extends "layout.html" %}
-{% block page_title %}SMTP Profiles{% endblock %}
+
+{% block title %}SMTP Profiles - Jasper TG BULK{% endblock %}
 
 {% block content %}
-<div class="space-y-8">
-    <!-- Enhanced Header with better visual hierarchy -->
-    <div class="page-header">
-        <div class="flex items-center space-x-4">
-            <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
-                <i class="fas fa-server text-2xl text-white"></i>
-            </div>
-            <div>
-                <h1 class="page-title text-3xl font-bold" style="color: var(--text-primary);">SMTP Profiles</h1>
-                <p class="page-description text-lg" style="color: var(--text-secondary);">Configure and manage your email server connections</p>
-            </div>
-        </div>
-        <button onclick="toggleForm()" 
-                class="btn-primary transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-                style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 1rem 2rem; font-size: 1rem; border-radius: 1rem;">
-            <i class="fas fa-plus mr-3"></i>Add New Profile
-        </button>
-    </div>
-
-    <!-- Enhanced Add SMTP Form with better layout and styling -->
-    <div id="smtp-form" class="card transform transition-all duration-300" style="display: none; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1.5rem; padding: 2rem;">
-        <div class="flex items-center space-x-3 mb-6">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                <i class="fas fa-plus text-white"></i>
-            </div>
-            <h3 class="text-xl font-bold" style="color: var(--text-primary);">Add New SMTP Profile</h3>
-        </div>
-        
-        <form method="post" action="/smtp" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-tag mr-2" style="color: var(--blue-600-text);"></i>Profile Name
-                    </label>
-                    <input type="text" name="name" required class="form-input-enhanced" placeholder="e.g., Gmail, Outlook, Company Mail">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-globe mr-2" style="color: var(--green-600-text);"></i>SMTP Host
-                    </label>
-                    <input type="text" name="host" required class="form-input-enhanced" placeholder="e.g., smtp.gmail.com">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-plug mr-2" style="color: var(--purple-600-text);"></i>Port
-                    </label>
-                    <input type="number" name="port" value="587" required class="form-input-enhanced">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-user mr-2" style="color: var(--orange-600-text);"></i>Username
-                    </label>
-                    <input type="text" name="username" required class="form-input-enhanced" placeholder="your-email@gmail.com">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-lock mr-2" style="color: var(--red-600-text);"></i>Password
-                    </label>
-                    <input type="password" name="password" required class="form-input-enhanced" placeholder="App password or regular password">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-building mr-2" style="color: var(--indigo-600-text);"></i>From Name
-                    </label>
-                    <input type="text" name="from_name" class="form-input-enhanced" placeholder="Your Company Name">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-envelope mr-2" style="color: var(--pink-600-text);"></i>From Email
-                    </label>
-                    <input type="email" name="from_email" required class="form-input-enhanced" placeholder="noreply@yourcompany.com">
-                </div>
-            </div>
-            
-            <!-- Enhanced Security Options -->
-            <div class="p-6 rounded-xl border-2" style="background: var(--bg-secondary); border-color: var(--border-color);">
-                <h4 class="text-lg font-semibold mb-4 flex items-center" style="color: var(--text-primary);">
-                    <i class="fas fa-shield-alt mr-2" style="color: var(--green-600-text);"></i>Security Configuration
-                </h4>
-                <div class="flex items-center space-x-8">
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="checkbox" name="use_tls" class="form-checkbox-enhanced">
-                        <span class="text-sm font-medium" style="color: var(--text-primary);">Use TLS</span>
-                    </label>
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="checkbox" name="use_starttls" checked class="form-checkbox-enhanced">
-                        <span class="text-sm font-medium" style="color: var(--text-primary);">Use STARTTLS</span>
-                    </label>
-                </div>
-            </div>
-            
-            <!-- Profile Status -->
-            <div class="p-6 rounded-xl border-2" style="background: var(--bg-secondary); border-color: var(--border-color);">
-                <h4 class="text-lg font-semibold mb-4 flex items-center" style="color: var(--text-primary);">
-                    <i class="fas fa-toggle-on mr-2" style="color: var(--purple-600-text);"></i>Profile Status
-                </h4>
+<div class="min-h-screen" style="background: var(--bg-primary);">
+    <!-- Header Section -->
+    <div class="bg-white shadow-sm border-b" style="border-color: var(--border-color);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
                 <div class="flex items-center space-x-3">
-                    <input type="checkbox" name="active" checked class="form-checkbox-enhanced">
-                    <span class="text-sm font-medium" style="color: var(--text-primary);">Active (Available for random selection)</span>
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--blue-600-bg);">
+                        <i class="fas fa-envelope text-xl" style="color: var(--blue-600-text);"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold" style="color: var(--text-primary);">SMTP Profiles</h1>
+                        <p class="text-sm" style="color: var(--text-secondary);">Configure and manage your email server connections</p>
+                    </div>
                 </div>
-                <p class="text-xs mt-2" style="color: var(--text-secondary);">Active profiles will be randomly selected for sending emails</p>
-            </div>
-
-            <!-- Enhanced Form Actions -->
-            <div class="flex items-center justify-end space-x-4 pt-6 border-t" style="border-color: var(--border-color);">
-                <button type="button" onclick="toggleForm()" class="btn-secondary-enhanced">
-                    <i class="fas fa-times mr-2"></i>Cancel
-                </button>
-                <button type="submit" class="btn-success-enhanced">
-                    <i class="fas fa-save mr-2"></i>Save Profile
+                <button onclick="openAddModal()" class="btn-primary-enhanced px-6 py-3 rounded-lg flex items-center space-x-2">
+                    <i class="fas fa-plus"></i>
+                    <span>Add New Profile</span>
                 </button>
             </div>
-        </form>
+        </div>
     </div>
 
-    <!-- Enhanced SMTP Profiles Table -->
-    <div class="card" style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1.5rem; overflow: hidden;">
-        <div class="p-6 border-b" style="border-color: var(--border-color);">
-            <h3 class="text-xl font-bold flex items-center" style="color: var(--text-primary);">
-                <i class="fas fa-list mr-3" style="color: var(--blue-600-text);"></i>Email Server Profiles
-                <span class="ml-3 px-3 py-1 rounded-full text-sm font-medium" style="background: var(--info-box-bg); color: var(--info-title-color);">{{ rows|length }} profile{{ 's' if rows|length != 1 else '' }}</span>
-            </h3>
-        </div>
-        
-        <div class="table-container">
-            <table class="table">
-                <thead>
-                    <tr style="background: var(--bg-secondary);">
-                        <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
-                            <i class="fas fa-server mr-2"></i>Profile
-                        </th>
-                        <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
-                            <i class="fas fa-globe mr-2"></i>Server
-                        </th>
-                        <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
-                            <i class="fas fa-user-shield mr-2"></i>Authentication
-                        </th>
-                        <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
-                            <i class="fas fa-envelope mr-2"></i>From Address
-                        </th>
-                        <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
-                            <i class="fas fa-shield-alt mr-2"></i>Security
-                        </th>
-                        <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
-                            <i class="fas fa-toggle-on mr-2"></i>Status
-                        </th>
-                        <th class="px-6 py-4 text-left font-semibold" style="color: var(--text-primary);">
-                            <i class="fas fa-cogs mr-2"></i>Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for profile in rows %}
-                    <tr class="hover:bg-opacity-50 transition-colors duration-200" style="border-bottom: 1px solid var(--border-color);">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
-                                    <i class="fas fa-server text-white text-lg"></i>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-lg" style="color: var(--text-primary);">{{ profile.name }}</div>
-                                    <div class="text-sm" style="color: var(--text-secondary);">ID: {{ profile.id }}</div>
-                                </div>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if rows %}
+        <!-- SMTP Profiles Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for profile in rows %}
+            <div class="bg-white rounded-xl shadow-sm border-2 transition-all duration-300 hover:shadow-lg" style="border-color: var(--border-color);">
+                <!-- Profile Header -->
+                <div class="p-6 border-b" style="border-color: var(--border-color);">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--green-600-bg);">
+                                <i class="fas fa-server text-lg" style="color: var(--green-600-text);"></i>
                             </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="space-y-1">
-                                <div class="font-medium" style="color: var(--text-primary);">{{ profile.host }}</div>
-                                <div class="text-sm px-2 py-1 rounded-lg inline-block" style="background: var(--gray-100-bg); color: var(--gray-800-text);">Port: {{ profile.port }}</div>
+                            <div>
+                                <h3 class="font-semibold text-lg" style="color: var(--text-primary);">{{ profile.name }}</h3>
+                                <p class="text-sm" style="color: var(--text-secondary);">{{ profile.host }}:{{ profile.port }}</p>
                             </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="space-y-1">
-                                <div class="font-medium" style="color: var(--text-primary);">{{ profile.username }}</div>
-                                <div class="text-sm" style="color: var(--text-secondary);">Password: ••••••••</div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="space-y-1">
-                                {% if profile.from_name %}
-                                <div class="font-medium" style="color: var(--text-primary);">{{ profile.from_name }}</div>
-                                {% endif %}
-                                <div class="text-sm px-2 py-1 rounded-lg inline-block" style="background: var(--gray-100-bg); color: var(--gray-800-text);">{{ profile.from_email }}</div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-2">
-                                {% if profile.use_tls %}
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background: var(--status-active-bg); color: var(--status-active-text);">
-                                    <i class="fas fa-lock mr-1"></i>TLS
-                                </span>
-                                {% endif %}
-                                {% if profile.use_starttls %}
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background: var(--info-box-bg); color: var(--info-title-color);">
-                                    <i class="fas fa-shield-alt mr-1"></i>STARTTLS
-                                </span>
-                                {% endif %}
-                                {% if not profile.use_tls and not profile.use_starttls %}
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background: var(--warning-box-bg); color: var(--warning-title-color);">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i>None
-                                </span>
-                                {% endif %}
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
+                        </div>
+                        <div class="flex items-center space-x-2">
                             {% if profile.active %}
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background: var(--status-active-bg); color: var(--status-active-text);">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background: var(--status-active-bg); color: var(--status-active-text);">
                                 <i class="fas fa-check-circle mr-1"></i>Active
                             </span>
                             {% else %}
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background: var(--status-inactive-bg); color: var(--status-inactive-text);">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="background: var(--status-inactive-bg); color: var(--status-inactive-text);">
                                 <i class="fas fa-pause-circle mr-1"></i>Inactive
                             </span>
                             {% endif %}
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center space-x-2">
-                                <button onclick="testSMTP({{ profile.id }})" class="btn-success text-sm px-3 py-2">
-                                    <i class="fas fa-paper-plane mr-1"></i>Test
-                                </button>
-                                <button onclick="runDiagnostics({{ profile.id }})" class="btn-primary text-sm px-3 py-2">
-                                    <i class="fas fa-stethoscope mr-1"></i>Diagnose
-                                </button>
-                                <button onclick="toggleActive({{ profile.id }}, {{ profile.active|lower }})" class="btn-secondary text-sm px-3 py-2">
-                                    <i class="fas fa-{{ 'pause' if profile.active else 'play' }} mr-1"></i>{{ 'Deactivate' if profile.active else 'Activate' }}
-                                </button>
-                                <button onclick="editSMTP({{ profile.id }}, '{{ profile.name }}', '{{ profile.host }}', {{ profile.port }}, '{{ profile.username }}', '{{ profile.from_name }}', '{{ profile.from_email }}', {{ profile.use_tls|lower }}, {{ profile.use_starttls|lower }})" class="btn-primary text-sm px-3 py-2">
-                                    <i class="fas fa-edit mr-1"></i>Edit
-                                </button>
-                                <form method="post" action="/smtp/{{ profile.id }}/delete" class="inline" onsubmit="return confirm('Are you sure you want to delete this SMTP profile? This action cannot be undone.')">
-                                    <button type="submit" class="btn-danger text-sm px-3 py-2">
-                                        <i class="fas fa-trash mr-1"></i>Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Enhanced Empty State -->
-    {% if not rows %}
-    <div class="card text-center py-16" style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1.5rem;">
-        <div class="w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-6" style="background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);">
-            <i class="fas fa-server text-4xl" style="color: var(--gray-400-text);"></i>
-        </div>
-        <h3 class="text-2xl font-bold mb-4" style="color: var(--text-primary);">No SMTP profiles configured yet</h3>
-        <p class="text-lg mb-8 max-w-md mx-auto" style="color: var(--text-secondary);">Get started by adding your first SMTP profile to enable email sending through your bot.</p>
-        <button onclick="toggleForm()" class="btn-primary transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl" style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 1rem;">
-            <i class="fas fa-plus mr-3"></i>Add First Profile
-        </button>
-    </div>
-    {% endif %}
-</div>
-
-<!-- Enhanced SMTP Test Modal -->
-<div id="test-modal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50" style="display: none;">
-    <div class="relative top-20 mx-auto p-8 border w-full max-w-2xl shadow-2xl rounded-2xl" style="background: var(--card-bg); border-color: var(--card-border);">
-        <div class="text-center">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
-                <i class="fas fa-paper-plane text-2xl text-white"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Test SMTP Connection & Inbox Delivery</h3>
-            <div class="mb-6">
-                <p class="text-sm mb-4" style="color: var(--text-secondary);">Enter a test email address to verify your SMTP configuration and inbox delivery optimization.</p>
-                <input type="email" id="test-email" placeholder="test@example.com" class="form-input-enhanced w-full">
-            </div>
-            
-            <!-- Inbox Delivery Optimization Info -->
-            <div class="mb-6 p-4 rounded-xl" style="background: var(--info-box-bg); border: 1px solid var(--info-box-border);">
-                <h4 class="font-semibold mb-2 flex items-center" style="color: var(--info-title-color);">
-                    <i class="fas fa-rocket mr-2"></i>Inbox Delivery Optimization
-                </h4>
-                <div class="text-sm space-y-1" style="color: var(--info-text-color);">
-                    <div>✅ Professional email headers for authentication</div>
-                    <div>✅ DKIM signature support</div>
-                    <div>✅ SPF and domain verification</div>
-                    <div>✅ Reputation management headers</div>
-                    <div>✅ HTML and text alternatives</div>
-                    <div>✅ Professional MIME formatting</div>
-                </div>
-            </div>
-            
-            <div class="flex flex-col space-y-3">
-                <button id="send-test" class="btn-primary w-full py-3">
-                    <i class="fas fa-paper-plane mr-2"></i>Send Test Email (Inbox Optimized)
-                </button>
-                <button onclick="closeTestModal()" class="btn-secondary w-full py-3">
-                    Cancel
-                </button>
-            </div>
-            
-            <!-- Test Results -->
-            <div id="test-results" class="mt-6" style="display: none;">
-                <div id="test-success" class="p-4 rounded-xl mb-4" style="background: var(--success-box-bg); border: 1px solid var(--success-box-border); display: none;">
-                    <h4 class="font-semibold mb-2 flex items-center" style="color: var(--success-title-color);">
-                        <i class="fas fa-check-circle mr-2"></i>Test Successful!
-                    </h4>
-                    <div class="text-sm space-y-1" style="color: var(--success-text-color);">
-                        <div id="success-message"></div>
-                        <div id="message-id" class="mt-2 p-2 rounded" style="background: var(--success-code-bg); color: var(--success-code-text); font-family: monospace; font-size: 0.8rem;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Details -->
+                    <div class="space-y-2">
+                        <div class="flex items-center space-x-2 text-sm">
+                            <i class="fas fa-user" style="color: var(--text-secondary);"></i>
+                            <span style="color: var(--text-primary);">{{ profile.username }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm">
+                            <i class="fas fa-envelope" style="color: var(--text-secondary);"></i>
+                            <span style="color: var(--text-primary);">{{ profile.from_email }}</span>
+                        </div>
+                        {% if profile.from_name %}
+                        <div class="flex items-center space-x-2 text-sm">
+                            <i class="fas fa-building" style="color: var(--text-secondary);"></i>
+                            <span style="color: var(--text-primary);">{{ profile.from_name }}</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
-                
-                <div id="test-error" class="p-4 rounded-xl mb-4" style="background: var(--warning-box-bg); border: 1px solid var(--warning-box-border); display: none;">
-                    <h4 class="font-semibold mb-2 flex items-center" style="color: var(--warning-title-color);">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>Test Failed
-                    </h4>
-                    <div class="text-sm" style="color: var(--warning-title-color);">
-                        <div id="error-message"></div>
+
+                <!-- Security Info -->
+                <div class="px-6 py-4 border-b" style="border-color: var(--border-color);">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            {% if profile.use_tls %}
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium" style="background: var(--green-100-bg); color: var(--green-600-text);">
+                                <i class="fas fa-lock mr-1"></i>TLS
+                            </span>
+                            {% endif %}
+                            {% if profile.use_starttls %}
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium" style="background: var(--blue-100-bg); color: var(--blue-600-text);">
+                                <i class="fas fa-shield-alt mr-1"></i>STARTTLS
+                            </span>
+                            {% endif %}
+                        </div>
+                        <span class="text-xs" style="color: var(--text-secondary);">Created {{ profile.created_at.strftime('%b %d, %Y') }}</span>
                     </div>
                 </div>
-                
-                <div id="test-recommendations" class="p-4 rounded-xl" style="background: var(--info-box-bg); border: 1px solid var(--info-box-border); display: none;">
-                    <h4 class="font-semibold mb-2 flex items-center" style="color: var(--info-title-color);">
-                        <i class="fas fa-lightbulb mr-2"></i>Recommendations
-                    </h4>
-                    <div id="recommendations-list" class="text-sm space-y-1" style="color: var(--info-text-color);"></div>
+
+                <!-- Action Buttons -->
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="testSMTP({{ profile.id }})" class="btn-success text-sm py-2 px-3 rounded-lg flex items-center justify-center space-x-2">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Test</span>
+                        </button>
+                        <button onclick="runDiagnostics({{ profile.id }})" class="btn-primary text-sm py-2 px-3 rounded-lg flex items-center justify-center space-x-2">
+                            <i class="fas fa-stethoscope"></i>
+                            <span>Diagnose</span>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <button onclick="toggleActive({{ profile.id }}, '{{ profile.active|lower }}')" class="btn-secondary text-sm py-2 px-3 rounded-lg flex items-center justify-center space-x-2">
+                            <i class="fas fa-{% if profile.active %}pause{% else %}play{% endif %}"></i>
+                            <span>{% if profile.active %}Deactivate{% else %}Activate{% endif %}</span>
+                        </button>
+                        <button onclick="editSMTP({{ profile.id }})" class="btn-warning text-sm py-2 px-3 rounded-lg flex items-center justify-center space-x-2">
+                            <i class="fas fa-edit"></i>
+                            <span>Edit</span>
+                        </button>
+                    </div>
+                    
+                    <button onclick="deleteSMTP({{ profile.id }})" class="w-full mt-3 btn-danger text-sm py-2 px-3 rounded-lg flex items-center justify-center space-x-2">
+                        <i class="fas fa-trash"></i>
+                        <span>Delete Profile</span>
+                    </button>
                 </div>
             </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center" style="background: var(--gray-100-bg);">
+                <i class="fas fa-envelope text-3xl" style="color: var(--text-secondary);"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2" style="color: var(--text-primary);">No SMTP Profiles Yet</h3>
+            <p class="text-sm mb-6" style="color: var(--text-secondary);">Get started by adding your first SMTP profile to send emails</p>
+            <button onclick="openAddModal()" class="btn-primary-enhanced px-6 py-3 rounded-lg">
+                <i class="fas fa-plus mr-2"></i>Add Your First Profile
+            </button>
+        </div>
+        {% endif %}
     </div>
 </div>
 
-<!-- Enhanced Edit SMTP Modal -->
-<div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50" style="display: none;">
-    <div class="relative top-10 mx-auto p-8 border w-full max-w-4xl shadow-2xl rounded-2xl" style="background: var(--card-bg); border-color: var(--card-border);">
-        <div class="mb-6">
-            <div class="flex items-center justify-between">
-                <h3 class="text-2xl font-bold flex items-center" style="color: var(--text-primary);">
-                    <i class="fas fa-edit mr-3" style="color: var(--blue-600-text);"></i>Edit SMTP Profile
-                </h3>
-                <button onclick="closeEditModal()" class="text-2xl hover:opacity-70 transition-opacity" style="color: var(--text-secondary);">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
-        
-        <form id="edit-form" method="post" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-tag mr-2" style="color: var(--blue-600-text);"></i>Profile Name
-                    </label>
-                    <input type="text" name="name" id="edit-name" required class="form-input-enhanced" placeholder="e.g., Gmail, Outlook, Company Mail">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-globe mr-2" style="color: var(--green-600-text);"></i>SMTP Host
-                    </label>
-                    <input type="text" name="host" id="edit-host" required class="form-input-enhanced" placeholder="e.g., smtp.gmail.com">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-plug mr-2" style="color: var(--purple-600-text);"></i>Port
-                    </label>
-                    <input type="number" name="port" id="edit-port" required class="form-input-enhanced">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-user mr-2" style="color: var(--orange-600-text);"></i>Username
-                    </label>
-                    <input type="text" name="username" id="edit-username" required class="form-input-enhanced" placeholder="your-email@gmail.com">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-lock mr-2" style="color: var(--red-600-text);"></i>Password
-                    </label>
-                    <input type="password" name="password" id="edit-password" class="form-input-enhanced" placeholder="Leave blank to keep current password">
-                    <p class="text-xs" style="color: var(--text-secondary);">Leave blank to keep the current password unchanged</p>
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-building mr-2" style="color: var(--indigo-600-text);"></i>From Name
-                    </label>
-                    <input type="text" name="from_name" id="edit-from-name" class="form-input-enhanced" placeholder="Your Company Name">
-                </div>
-                <div class="space-y-2">
-                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                        <i class="fas fa-envelope mr-2" style="color: var(--pink-600-text);"></i>From Email
-                    </label>
-                    <input type="email" name="from_email" id="edit-from-email" required class="form-input-enhanced" placeholder="noreply@yourcompany.com">
-                </div>
-            </div>
-            
-            <!-- Enhanced Security Options -->
-            <div class="p-6 rounded-xl border-2" style="background: var(--bg-secondary); border-color: var(--border-color);">
-                <h4 class="text-lg font-semibold mb-4 flex items-center" style="color: var(--text-primary);">
-                    <i class="fas fa-shield-alt mr-2" style="color: var(--green-600-text);"></i>Security Configuration
-                </h4>
-                <div class="flex items-center space-x-8">
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="checkbox" name="use_tls" id="edit-use-tls" class="form-checkbox-enhanced">
-                        <span class="text-sm font-medium" style="color: var(--text-primary);">Use TLS</span>
-                    </label>
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="checkbox" name="use_starttls" id="edit-use-starttls" class="form-checkbox-enhanced">
-                        <span class="text-sm font-medium" style="color: var(--text-primary);">Use STARTTLS</span>
-                    </label>
+<!-- Add/Edit SMTP Profile Modal -->
+<div id="smtp-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="p-6 border-b" style="border-color: var(--border-color);">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--green-600-bg);">
+                            <i class="fas fa-plus text-lg" style="color: var(--green-600-text);"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold" style="color: var(--text-primary);" id="modal-title">Add New SMTP Profile</h2>
+                            <p class="text-sm" style="color: var(--text-secondary);">Configure your email server connection</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
             </div>
 
-            <!-- Enhanced Form Actions -->
-            <div class="flex items-center justify-end space-x-4 pt-6 border-t" style="border-color: var(--border-color);">
-                <button type="button" onclick="closeEditModal()" class="btn-secondary-enhanced">
-                    <i class="fas fa-times mr-2"></i>Cancel
-                </button>
-                <button type="submit" class="btn-success-enhanced">
-                    <i class="fas fa-save mr-2"></i>Update Profile
-                </button>
+            <!-- Modal Form -->
+            <form id="smtp-form" method="POST" class="p-6 space-y-6">
+                <input type="hidden" id="profile-id" name="profile_id">
+                
+                <!-- Basic Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="fas fa-tag mr-2" style="color: var(--blue-600-text);"></i>Profile Name
+                        </label>
+                        <input type="text" name="name" id="profile-name" required class="form-input-enhanced" placeholder="e.g., Gmail, Outlook, Company SMTP">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="fas fa-globe mr-2" style="color: var(--green-600-text);"></i>SMTP Host
+                        </label>
+                        <input type="text" name="host" id="profile-host" required class="form-input-enhanced" placeholder="e.g., smtp.gmail.com">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="fas fa-bolt mr-2" style="color: var(--purple-600-text);"></i>Port
+                        </label>
+                        <input type="number" name="port" id="profile-port" required class="form-input-enhanced" value="587" min="1" max="65535">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="fas fa-user mr-2" style="color: var(--orange-600-text);"></i>Username
+                        </label>
+                        <input type="text" name="username" id="profile-username" required class="form-input-enhanced" placeholder="your-email@gmail.com">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="fas fa-lock mr-2" style="color: var(--red-600-text);"></i>Password
+                        </label>
+                        <input type="password" name="password" id="profile-password" class="form-input-enhanced" placeholder="App password or regular password">
+                        <p class="text-xs" style="color: var(--text-secondary);">Leave empty to keep existing password when editing</p>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="fas fa-envelope mr-2" style="color: var(--pink-600-text);"></i>From Email
+                        </label>
+                        <input type="email" name="from_email" id="profile-from-email" required class="form-input-enhanced" placeholder="noreply@yourcompany.com">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
+                            <i class="fas fa-building mr-2" style="color: var(--blue-600-text);"></i>From Name
+                        </label>
+                        <input type="text" name="from_name" id="profile-from-name" class="form-input-enhanced" placeholder="Your Company Name">
+                    </div>
+                </div>
+
+                <!-- Security Configuration -->
+                <div class="p-6 rounded-xl border-2" style="background: var(--bg-secondary); border-color: var(--border-color);">
+                    <h4 class="text-lg font-semibold mb-4 flex items-center" style="color: var(--text-primary);">
+                        <i class="fas fa-shield-alt mr-2" style="color: var(--green-600-text);"></i>Security Configuration
+                    </h4>
+                    <div class="flex items-center space-x-8">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="use_tls" id="profile-use-tls" class="form-checkbox-enhanced">
+                            <span class="text-sm font-medium" style="color: var(--text-primary);">Use TLS</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="use_starttls" id="profile-use-starttls" class="form-checkbox-enhanced" checked>
+                            <span class="text-sm font-medium" style="color: var(--text-primary);">Use STARTTLS</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Profile Status -->
+                <div class="p-6 rounded-xl border-2" style="background: var(--bg-secondary); border-color: var(--border-color);">
+                    <h4 class="text-lg font-semibold mb-4 flex items-center" style="color: var(--text-primary);">
+                        <i class="fas fa-toggle-on mr-2" style="color: var(--purple-600-text);"></i>Profile Status
+                    </h4>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="checkbox" name="active" id="profile-active" class="form-checkbox-enhanced" checked>
+                        <span class="text-sm font-medium" style="color: var(--text-primary);">Active (Available for random selection)</span>
+                    </label>
+                    <p class="text-xs mt-2" style="color: var(--text-secondary);">Active profiles will be randomly selected for sending emails</p>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end space-x-3 pt-6 border-t" style="border-color: var(--border-color);">
+                    <button type="button" onclick="closeModal()" class="btn-secondary px-6 py-2 rounded-lg">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-primary-enhanced px-6 py-2 rounded-lg">
+                        <i class="fas fa-save mr-2"></i>Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Test SMTP Modal -->
+<div id="test-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+            <!-- Modal Header -->
+            <div class="p-6 border-b" style="border-color: var(--border-color);">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--blue-600-bg);">
+                            <i class="fas fa-paper-plane text-lg" style="color: var(--blue-600-text);"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold" style="color: var(--text-primary);">Test SMTP Connection</h2>
+                            <p class="text-sm" style="color: var(--text-secondary);">Send a test email to verify your configuration</p>
+                        </div>
+                    </div>
+                    <button onclick="closeTestModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
             </div>
-        </form>
+
+            <!-- Test Form -->
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">Test Email Address</label>
+                        <input type="email" id="test-email" class="form-input-enhanced" placeholder="test@example.com">
+                    </div>
+                    
+                    <button onclick="sendTestEmail()" class="w-full btn-primary-enhanced py-3 rounded-lg">
+                        <i class="fas fa-paper-plane mr-2"></i>Send Test Email
+                    </button>
+                </div>
+
+                <!-- Test Results -->
+                <div id="test-results" class="mt-6 hidden">
+                    <div class="p-4 rounded-lg" style="background: var(--bg-secondary);">
+                        <h4 class="font-semibold mb-2" style="color: var(--text-primary);">Test Results</h4>
+                        <div id="test-message"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Diagnostics Modal -->
+<div id="diagnostics-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="p-6 border-b" style="border-color: var(--border-color);">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--yellow-600-bg);">
+                            <i class="fas fa-stethoscope text-lg" style="color: var(--yellow-600-text);"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold" style="color: var(--text-primary);">SMTP Diagnostics</h2>
+                            <p class="text-sm" style="color: var(--text-secondary);">Comprehensive connection and delivery analysis</p>
+                        </div>
+                    </div>
+                    <button onclick="closeDiagnosticsModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Diagnostics Content -->
+            <div class="p-6">
+                <div id="diagnostics-content">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
 let currentProfileId = null;
+let isEditMode = false;
 
-function toggleForm() {
-    const form = document.getElementById('smtp-form');
-    if (form.style.display === 'none') {
-        form.style.display = 'block';
-        form.scrollIntoView({ behavior: 'smooth' });
-    } else {
-        form.style.display = 'none';
-    }
+function openAddModal() {
+    isEditMode = false;
+    document.getElementById('modal-title').textContent = 'Add New SMTP Profile';
+    document.getElementById('smtp-form').action = '/smtp';
+    document.getElementById('smtp-form').reset();
+    document.getElementById('profile-id').value = '';
+    document.getElementById('smtp-modal').style.display = 'block';
 }
 
-function testSMTP(profileId) {
+function editSMTP(profileId) {
+    isEditMode = true;
     currentProfileId = profileId;
+    
+    // Get profile data from the DOM (you might want to fetch this via API)
+    const profileCard = document.querySelector(`[onclick="editSMTP(${profileId})"]`).closest('.bg-white');
+    const profileName = profileCard.querySelector('h3').textContent;
+    const profileHost = profileCard.querySelector('p').textContent.split(':')[0];
+    const profilePort = profileCard.querySelector('p').textContent.split(':')[1];
+    
+    document.getElementById('modal-title').textContent = 'Edit SMTP Profile';
+    document.getElementById('smtp-form').action = `/smtp/${profileId}/edit`;
+    document.getElementById('profile-name').value = profileName;
+    document.getElementById('profile-host').value = profileHost;
+    document.getElementById('profile-port').value = profilePort;
+    
+    // You'll need to populate other fields via API call
+    document.getElementById('smtp-modal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('smtp-modal').style.display = 'none';
+    currentProfileId = null;
+    isEditMode = false;
+}
+
+function openTestModal() {
+    document.getElementById('test-results').classList.add('hidden');
+    document.getElementById('test-email').value = '';
     document.getElementById('test-modal').style.display = 'block';
-    document.getElementById('test-email').focus();
 }
 
 function closeTestModal() {
     document.getElementById('test-modal').style.display = 'none';
-    document.getElementById('test-email').value = '';
-    currentProfileId = null;
 }
 
-function editSMTP(profileId, name, host, port, username, fromName, fromEmail, useTls, useStarttls) {
+function sendTestEmail() {
+    const testEmail = document.getElementById('test-email').value;
+    if (!testEmail) {
+        showToast('Please enter a test email address', 'error');
+        return;
+    }
+    
+    fetch('/api/smtp/test', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            profile_id: currentProfileId,
+            test_email: testEmail
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultsDiv = document.getElementById('test-results');
+        const messageDiv = document.getElementById('test-message');
+        
+        if (data.success) {
+            messageDiv.innerHTML = `
+                <div class="text-green-600 mb-2">
+                    <i class="fas fa-check-circle mr-2"></i>${data.message}
+                </div>
+                <div class="text-sm text-gray-600">
+                    <strong>Message ID:</strong> ${data.message_id}<br>
+                    <strong>Delivery Optimization:</strong> ${data.delivery_optimization}
+                </div>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div class="text-red-600 mb-2">
+                    <i class="fas fa-exclamation-circle mr-2"></i>${data.error}
+                </div>
+                <div class="text-sm text-gray-600">
+                    ${data.details ? data.details.join('<br>') : ''}
+                </div>
+            `;
+        }
+        
+        resultsDiv.classList.remove('hidden');
+    })
+    .catch(error => {
+        showToast('Error testing SMTP: ' + error.message, 'error');
+    });
+}
+
+function runDiagnostics(profileId) {
     currentProfileId = profileId;
     
-    // Set form values
-    document.getElementById('edit-name').value = name;
-    document.getElementById('edit-host').value = host;
-    document.getElementById('edit-port').value = port;
-    document.getElementById('edit-username').value = username;
-    document.getElementById('edit-from-name').value = fromName;
-    document.getElementById('edit-from-email').value = fromEmail;
-    document.getElementById('edit-use-tls').checked = useTls === 'true';
-    document.getElementById('edit-use-starttls').checked = useStarttls === 'true';
-    
-    // Set form action
-    document.getElementById('edit-form').action = `/smtp/${profileId}/edit`;
-    
-    // Show modal
-    document.getElementById('edit-modal').style.display = 'block';
+    fetch('/api/smtp/diagnostics', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            profile_id: profileId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        displayDiagnosticsResults(data);
+    })
+    .catch(error => {
+        showToast('Error running diagnostics: ' + error.message, 'error');
+    });
 }
 
-function closeEditModal() {
-    document.getElementById('edit-modal').style.display = 'none';
-    currentProfileId = null;
+function displayDiagnosticsResults(data) {
+    const content = document.getElementById('diagnostics-content');
+    
+    content.innerHTML = `
+        <div class="space-y-6">
+            <!-- Connection Status -->
+            <div class="p-4 rounded-lg" style="background: var(--bg-secondary);">
+                <h4 class="font-semibold mb-3" style="color: var(--text-primary);">Connection Status</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-${data.connection_success ? 'check-circle text-green-600' : 'times-circle text-red-600'}"></i>
+                        <span style="color: var(--text-primary);">Connection: ${data.connection_success ? 'Success' : 'Failed'}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-${data.authentication_success ? 'check-circle text-green-600' : 'times-circle text-red-600'}"></i>
+                        <span style="color: var(--text-primary);">Authentication: ${data.authentication_success ? 'Success' : 'Failed'}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inbox Delivery Score -->
+            <div class="p-4 rounded-lg" style="background: var(--bg-secondary);">
+                <h4 class="font-semibold mb-3" style="color: var(--text-primary);">Inbox Delivery Score</h4>
+                <div class="text-center">
+                    <div class="text-3xl font-bold mb-2" style="color: var(--text-primary);">${data.inbox_delivery_score}%</div>
+                    <div class="text-lg font-medium" style="color: var(--text-secondary);">${data.inbox_delivery_rating}</div>
+                </div>
+            </div>
+            
+            <!-- Recommendations -->
+            <div class="p-4 rounded-lg" style="background: var(--bg-secondary);">
+                <h4 class="font-semibold mb-3" style="color: var(--text-primary);">Recommendations</h4>
+                <ul class="space-y-2">
+                    ${data.recommendations ? data.recommendations.map(rec => `<li class="text-sm" style="color: var(--text-secondary);">• ${rec}</li>`).join('') : '<li class="text-sm" style="color: var(--text-secondary);">No specific recommendations</li>'}
+                </ul>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('diagnostics-modal').style.display = 'block';
 }
 
 function closeDiagnosticsModal() {
@@ -491,7 +527,6 @@ function toggleActive(profileId, currentStatus) {
     .then(data => {
         if (data.success) {
             showToast(data.message, 'success');
-            // Reload page to show updated status
             setTimeout(() => location.reload(), 1000);
         } else {
             showToast('Error: ' + data.error, 'error');
@@ -502,57 +537,40 @@ function toggleActive(profileId, currentStatus) {
     });
 }
 
-document.getElementById('send-test').addEventListener('click', function() {
-    const email = document.getElementById('test-email').value;
-    if (!email) {
-        showToast('Please enter a test email address', 'warning');
+function deleteSMTP(profileId) {
+    if (!confirm('Are you sure you want to delete this SMTP profile? This action cannot be undone.')) {
         return;
     }
-
-    const button = this;
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Testing...';
-    button.disabled = true;
-
-    fetch('/api/smtp/test', {
+    
+    fetch(`/api/smtp/${profileId}/delete`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            profile_id: currentProfileId,
-            test_email: email
-        })
+        }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('Test email sent successfully!', 'success');
-            closeTestModal();
+    .then(response => {
+        if (response.ok) {
+            showToast('SMTP profile deleted successfully', 'success');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            showToast('Test failed: ' + data.error, 'error');
+            showToast('Error deleting SMTP profile', 'error');
         }
     })
     .catch(error => {
-        showToast('Error testing SMTP connection', 'error');
-    })
-    .finally(() => {
-        button.innerHTML = originalText;
-        button.disabled = false;
+        showToast('Error deleting SMTP profile: ' + error.message, 'error');
     });
-});
+}
+
+function testSMTP(profileId) {
+    currentProfileId = profileId;
+    openTestModal();
+}
 
 // Close modals when clicking outside
-document.getElementById('test-modal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeTestModal();
+window.onclick = function(event) {
+    if (event.target.classList.contains('fixed')) {
+        event.target.style.display = 'none';
     }
-});
-
-document.getElementById('edit-modal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeEditModal();
-    }
-});
+}
 </script>
 {% endblock %}
