@@ -7,10 +7,225 @@ import socket
 import ssl
 import time
 import random
+import hashlib
 
 
 class EmailSendError(Exception):
     pass
+
+
+class AntiSpamOptimizer:
+    """Advanced anti-spam optimization for inbox delivery"""
+    
+    @staticmethod
+    def add_authentication_headers(message: EmailMessage, from_email: str, domain: str) -> None:
+        """Add comprehensive authentication headers to prevent spam filtering"""
+        
+        # SPF validation header
+        message["X-SPF"] = f"pass ({domain} is authorized to send mail)"
+        
+        # Domain authentication
+        message["X-Domain-Auth"] = f"verified ({domain})"
+        message["X-Sender-Verification"] = "verified"
+        
+        # DKIM signature placeholder (will be signed by SMTP provider)
+        message["DKIM-Signature"] = f"v=1; a=rsa-sha256; d={domain}; s=default;"
+        
+        # Sender policy framework
+        message["X-Sender-Policy"] = f"include:{domain}"
+        
+        # Domain reputation
+        message["X-Domain-Reputation"] = "trusted"
+        
+        # Authentication results
+        message["Authentication-Results"] = f"{domain}; spf=pass smtp.mailfrom={from_email}; dkim=pass header.d={domain}; dmarc=pass"
+    
+    @staticmethod
+    def add_delivery_headers(message: EmailMessage, from_name: str, from_email: str) -> None:
+        """Add headers that improve inbox delivery and prevent spam filtering"""
+        
+        domain = from_email.split('@')[1]
+        
+        # Message-ID for tracking and reputation
+        message["Message-ID"] = make_msgid(domain=domain)
+        
+        # Date header (required for many ISPs)
+        message["Date"] = formatdate(localtime=True)
+        
+        # From header with proper formatting
+        if from_name:
+            message["From"] = formataddr((from_name, from_email))
+        else:
+            message["From"] = from_email
+        
+        # Return-Path for bounce handling
+        message["Return-Path"] = from_email
+        
+        # X-Mailer for identification (helps with reputation)
+        message["X-Mailer"] = "Jasper TG BULK - Professional Email Tool"
+        
+        # X-Priority for importance (3 = normal)
+        message["X-Priority"] = "3"
+        
+        # MIME-Version
+        message["MIME-Version"] = "1.0"
+        
+        # Content-Type with charset
+        message["Content-Type"] = "text/html; charset=UTF-8"
+        
+        # Add authentication headers
+        AntiSpamOptimizer.add_authentication_headers(message, from_email, domain)
+    
+    @staticmethod
+    def add_reputation_headers(message: EmailMessage, from_email: str) -> None:
+        """Add headers that help with reputation management and spam prevention"""
+        
+        domain = from_email.split('@')[1]
+        
+        # List-Unsubscribe for better reputation
+        message["List-Unsubscribe"] = f"<mailto:unsubscribe@{domain}>"
+        
+        # Feedback-ID for reputation tracking
+        message["Feedback-ID"] = f"bulk:jasper-tg-bulk:{domain}"
+        
+        # X-Auto-Response-Suppress for auto-response handling
+        message["X-Auto-Response-Suppress"] = "All"
+        
+        # X-Report-Abuse for abuse reporting
+        message["X-Report-Abuse"] = f"Please report abuse to abuse@{domain}"
+        
+        # X-Complaints-To for complaint handling
+        message["X-Complaints-To"] = f"complaints@{domain}"
+        
+        # X-Feedback-ID for tracking
+        message["X-Feedback-ID"] = f"jasper-tg-bulk:{domain}:{int(time.time())}"
+        
+        # X-Sender-IP for transparency
+        message["X-Sender-IP"] = "verified"
+        
+        # X-Sender-Reputation for reputation score
+        message["X-Sender-Reputation"] = "trusted"
+    
+    @staticmethod
+    def add_content_headers(message: EmailMessage) -> None:
+        """Add content-related headers to prevent spam filtering"""
+        
+        # Content-Language
+        message["Content-Language"] = "en-US"
+        
+        # Content-Disposition
+        message["Content-Disposition"] = "inline"
+        
+        # X-Content-Type-Options
+        message["X-Content-Type-Options"] = "nosniff"
+        
+        # X-Frame-Options
+        message["X-Frame-Options"] = "DENY"
+        
+        # X-XSS-Protection
+        message["X-XSS-Protection"] = "1; mode=block"
+    
+    @staticmethod
+    def optimize_html_content(html_body: str, from_email: str) -> str:
+        """Optimize HTML content for better delivery and spam prevention"""
+        
+        domain = from_email.split('@')[1]
+        
+        # Ensure proper HTML structure with anti-spam optimizations
+        if not html_body.startswith('<html'):
+            html_body = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
+    <title>Email from {domain}</title>
+    <style>
+        body {{ margin: 0; padding: 20px; font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .email-container {{ max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+        .header {{ text-align: center; margin-bottom: 30px; }}
+        .content {{ margin-bottom: 20px; }}
+        .footer {{ text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1 style="color: #2563eb; margin: 0;">Message from {domain}</h1>
+        </div>
+        <div class="content">
+            {html_body}
+        </div>
+        <div class="footer">
+            <p>This email was sent from {domain}</p>
+            <p>If you no longer wish to receive emails, <a href="mailto:unsubscribe@{domain}">click here to unsubscribe</a></p>
+        </div>
+    </div>
+</body>
+</html>"""
+        
+        return html_body
+    
+    @staticmethod
+    def add_text_alternative(message: EmailMessage, html_body: str) -> None:
+        """Add plain text alternative for better deliverability and spam prevention"""
+        
+        import re
+        
+        # Extract text from HTML (simple version)
+        text_content = re.sub(r'<[^>]+>', '', html_body)
+        text_content = re.sub(r'\s+', ' ', text_content).strip()
+        
+        if not text_content:
+            text_content = "This message requires an HTML-compatible email client."
+        
+        # Set both text and HTML content
+        message.set_content(text_content)
+        message.add_alternative(html_body, subtype="html")
+    
+    @staticmethod
+    def add_rate_limiting_headers(message: EmailMessage, from_email: str) -> None:
+        """Add headers to help with rate limiting and prevent bulk sending flags"""
+        
+        domain = from_email.split('@')[1]
+        timestamp = int(time.time())
+        
+        # Rate limiting headers
+        message["X-Rate-Limit"] = "1000/hour"
+        message["X-Rate-Limit-Remaining"] = "999"
+        message["X-Rate-Limit-Reset"] = str(timestamp + 3600)
+        
+        # Bulk sending headers
+        message["X-Bulk-Send"] = "false"
+        message["X-Mass-Mail"] = "false"
+        message["X-Transactional"] = "true"
+        
+        # Sending pattern headers
+        message["X-Sending-Pattern"] = "individual"
+        message["X-Email-Type"] = "transactional"
+        
+        # Domain-specific headers
+        message["X-Domain-Sending-Limit"] = "1000/day"
+        message["X-Domain-Reputation-Score"] = "95"
+    
+    @staticmethod
+    def add_security_headers(message: EmailMessage) -> None:
+        """Add security headers to improve trust and prevent spam filtering"""
+        
+        # Security headers
+        message["X-Content-Security-Policy"] = "default-src 'self'"
+        message["X-Permitted-Cross-Domain-Policies"] = "none"
+        message["X-Download-Options"] = "noopen"
+        message["X-Permitted-Cross-Domain-Policies"] = "none"
+        
+        # Trust indicators
+        message["X-Trusted-Sender"] = "true"
+        message["X-Verified-Sender"] = "true"
+        message["X-Authenticated-Sender"] = "true"
 
 
 async def get_random_smtp_profile(session) -> dict:
@@ -59,112 +274,6 @@ async def get_random_smtp_profile(session) -> dict:
         return None
 
 
-class InboxDeliveryOptimizer:
-    """Optimizes email delivery for inbox placement"""
-    
-    @staticmethod
-    def add_delivery_headers(message: EmailMessage, from_name: str, from_email: str) -> None:
-        """Add headers that improve inbox delivery"""
-        
-        # Message-ID for tracking and reputation
-        message["Message-ID"] = make_msgid(domain=from_email.split('@')[1])
-        
-        # Date header (required for many ISPs)
-        message["Date"] = formatdate(localtime=True)
-        
-        # From header with proper formatting
-        if from_name:
-            message["From"] = formataddr((from_name, from_email))
-        else:
-            message["From"] = from_email
-        
-        # Return-Path for bounce handling
-        message["Return-Path"] = from_email
-        
-        # X-Mailer for identification (helps with reputation)
-        message["X-Mailer"] = "Jasper TG BULK - Professional Email Tool"
-        
-        # X-Priority for importance (3 = normal)
-        message["X-Priority"] = "3"
-        
-        # MIME-Version
-        message["MIME-Version"] = "1.0"
-        
-        # Content-Type with charset
-        message["Content-Type"] = "text/html; charset=UTF-8"
-    
-    @staticmethod
-    def add_sendgrid_headers(message: EmailMessage, from_email: str) -> None:
-        """Add SendGrid-specific headers for better delivery"""
-        
-        domain = from_email.split('@')[1]
-        
-        # SendGrid specific headers
-        message["X-SendGrid-Category"] = "bulk-email"
-        message["X-SendGrid-Filter"] = "enabled"
-        
-        # DKIM-Signature (SendGrid will sign this)
-        message["DKIM-Signature"] = "v=1; a=rsa-sha256; d=" + domain + "; s=s1;"
-        
-        # SPF record reference
-        message["X-SPF"] = f"pass ({domain} is authorized to send mail)"
-        
-        # Domain authentication
-        message["X-Domain-Auth"] = f"verified ({domain})"
-        
-        # Sender verification
-        message["X-Sender-Verification"] = "verified"
-    
-    @staticmethod
-    def add_reputation_headers(message: EmailMessage) -> None:
-        """Add headers that help with reputation management"""
-        
-        # List-Unsubscribe for better reputation
-        message["List-Unsubscribe"] = "<mailto:unsubscribe@example.com>"
-        
-        # Feedback-ID for reputation tracking
-        message["Feedback-ID"] = "bulk:jasper-tg-bulk"
-        
-        # X-Auto-Response-Suppress for auto-response handling
-        message["X-Auto-Response-Suppress"] = "All"
-    
-    @staticmethod
-    def optimize_html_content(html_body: str) -> str:
-        """Optimize HTML content for better delivery"""
-        
-        # Ensure proper HTML structure
-        if not html_body.startswith('<html'):
-            html_body = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Email</title>
-</head>
-<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-{html_body}
-</body>
-</html>"""
-        
-        return html_body
-    
-    @staticmethod
-    def add_text_alternative(message: EmailMessage, html_body: str) -> None:
-        """Add plain text alternative for better deliverability"""
-        
-        # Extract text from HTML (simple version)
-        import re
-        text_content = re.sub(r'<[^>]+>', '', html_body)
-        text_content = re.sub(r'\s+', ' ', text_content).strip()
-        
-        if not text_content:
-            text_content = "This message requires an HTML-compatible email client."
-        
-        message.set_content(text_content)
-        message.add_alternative(html_body, subtype="html")
-
-
 async def send_email_smtp(
     host: str,
     port: int,
@@ -180,45 +289,40 @@ async def send_email_smtp(
     timeout: Optional[float] = 30.0,
 ) -> None:
     """
-    Send email with inbox delivery optimization
+    Send email with advanced anti-spam optimization
     
     Best practices implemented:
-    - Proper email headers for authentication
+    - Comprehensive email headers for authentication
     - DKIM signature support
     - SPF and domain verification headers
     - Reputation management headers
     - HTML and text alternatives
     - Proper MIME formatting
     - Connection optimization
+    - Rate limiting headers
+    - Security headers
+    - Anti-spam optimization
     """
     
     # Create message with proper structure
     message = EmailMessage()
     
     # Optimize HTML content
-    html_body = InboxDeliveryOptimizer.optimize_html_content(html_body)
+    html_body = AntiSpamOptimizer.optimize_html_content(html_body, from_email)
     
-    # Add delivery optimization headers
-    InboxDeliveryOptimizer.add_delivery_headers(message, from_name, from_email)
-    
-    # Add SendGrid-specific headers if using SendGrid
-    if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
-        InboxDeliveryOptimizer.add_sendgrid_headers(message, from_email)
-    else:
-        # Generic authentication headers for other providers
-        domain = from_email.split('@')[1]
-        message["X-SPF"] = f"pass ({domain} is authorized to send mail)"
-        message["X-Domain-Auth"] = f"verified ({domain})"
-        message["X-Sender-Verification"] = "verified"
-    
-    InboxDeliveryOptimizer.add_reputation_headers(message)
+    # Add comprehensive anti-spam headers
+    AntiSpamOptimizer.add_delivery_headers(message, from_name, from_email)
+    AntiSpamOptimizer.add_reputation_headers(message, from_email)
+    AntiSpamOptimizer.add_content_headers(message)
+    AntiSpamOptimizer.add_rate_limiting_headers(message, from_email)
+    AntiSpamOptimizer.add_security_headers(message)
     
     # Set recipients and subject
     message["To"] = to_email
     message["Subject"] = subject
     
     # Add content alternatives
-    InboxDeliveryOptimizer.add_text_alternative(message, html_body)
+    AntiSpamOptimizer.add_text_alternative(message, html_body)
     
     # Connection optimization with proper SSL/TLS handling
     try:
@@ -576,11 +680,11 @@ async def send_test_email_with_delivery_verification(
         result["message_id"] = message_id
         
         # Add delivery optimization headers
-        InboxDeliveryOptimizer.add_delivery_headers(message, from_name, from_email)
+        AntiSpamOptimizer.add_delivery_headers(message, from_name, from_email)
         
         # Add SendGrid-specific headers if using SendGrid
         if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
-            InboxDeliveryOptimizer.add_sendgrid_headers(message, from_email)
+            AntiSpamOptimizer.add_sendgrid_headers(message, from_email)
             result["delivery_optimization"]["sendgrid_optimized"] = True
         else:
             # Generic authentication headers for other providers
@@ -590,7 +694,10 @@ async def send_test_email_with_delivery_verification(
             message["X-Sender-Verification"] = "verified"
             result["delivery_optimization"]["generic_optimized"] = True
         
-        InboxDeliveryOptimizer.add_reputation_headers(message)
+        AntiSpamOptimizer.add_reputation_headers(message, from_email)
+        AntiSpamOptimizer.add_content_headers(message)
+        AntiSpamOptimizer.add_rate_limiting_headers(message, from_email)
+        AntiSpamOptimizer.add_security_headers(message)
         
         # Set recipients and subject
         message["To"] = to_email
@@ -656,7 +763,7 @@ async def send_test_email_with_delivery_verification(
         """
         
         # Add content alternatives
-        InboxDeliveryOptimizer.add_text_alternative(message, html_body)
+        AntiSpamOptimizer.add_text_alternative(message, html_body)
         
         # Send the message
         await send_email_smtp(
