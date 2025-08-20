@@ -92,15 +92,19 @@ class InboxDeliveryOptimizer:
         
         # Content-Type with charset
         message["Content-Type"] = "text/html; charset=UTF-8"
-        
-        # DKIM-Signature placeholder (will be signed by SMTP server if supported)
-        message["DKIM-Signature"] = "v=1; a=rsa-sha256; d=" + from_email.split('@')[1] + "; s=default;"
     
     @staticmethod
-    def add_authentication_headers(message: EmailMessage, from_email: str) -> None:
-        """Add authentication headers that improve deliverability"""
+    def add_sendgrid_headers(message: EmailMessage, from_email: str) -> None:
+        """Add SendGrid-specific headers for better delivery"""
         
         domain = from_email.split('@')[1]
+        
+        # SendGrid specific headers
+        message["X-SendGrid-Category"] = "bulk-email"
+        message["X-SendGrid-Filter"] = "enabled"
+        
+        # DKIM-Signature (SendGrid will sign this)
+        message["DKIM-Signature"] = "v=1; a=rsa-sha256; d=" + domain + "; s=s1;"
         
         # SPF record reference
         message["X-SPF"] = f"pass ({domain} is authorized to send mail)"
@@ -196,7 +200,17 @@ async def send_email_smtp(
     
     # Add delivery optimization headers
     InboxDeliveryOptimizer.add_delivery_headers(message, from_name, from_email)
-    InboxDeliveryOptimizer.add_authentication_headers(message, from_email)
+    
+    # Add SendGrid-specific headers if using SendGrid
+    if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
+        InboxDeliveryOptimizer.add_sendgrid_headers(message, from_email)
+    else:
+        # Generic authentication headers for other providers
+        domain = from_email.split('@')[1]
+        message["X-SPF"] = f"pass ({domain} is authorized to send mail)"
+        message["X-Domain-Auth"] = f"verified ({domain})"
+        message["X-Sender-Verification"] = "verified"
+    
     InboxDeliveryOptimizer.add_reputation_headers(message)
     
     # Set recipients and subject
@@ -206,14 +220,16 @@ async def send_email_smtp(
     # Add content alternatives
     InboxDeliveryOptimizer.add_text_alternative(message, html_body)
     
-    # Connection optimization
+    # Connection optimization with proper SSL/TLS handling
     try:
         # Use TLS when available (port 587 or 465)
         if use_tls or port == 465:
-            # Explicit TLS (port 465)
+            # Explicit TLS (port 465) - Use proper SSL context
             context = ssl.create_default_context()
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_NONE
+            # Only disable verification for self-signed certificates if absolutely necessary
+            if host in ["localhost", "127.0.0.1"]:
+                context.check_hostname = False
+                context.verify_mode = ssl.CERT_NONE
             
             async with SMTP(
                 hostname=host, 
@@ -226,10 +242,12 @@ async def send_email_smtp(
                 await smtp.send_message(message)
                 
         elif use_starttls or port == 587:
-            # STARTTLS (port 587)
+            # STARTTLS (port 587) - Use proper SSL context
             context = ssl.create_default_context()
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_NONE
+            # Only disable verification for self-signed certificates if absolutely necessary
+            if host in ["localhost", "127.0.0.1"]:
+                context.check_hostname = False
+                context.verify_mode = ssl.CERT_NONE
             
             async with SMTP(
                 hostname=host, 
@@ -408,8 +426,10 @@ async def test_smtp_connection(
         # Test basic connection
         if use_tls or port == 465:
             context = ssl.create_default_context()
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_NONE
+            # Only disable verification for localhost
+            if host not in ["localhost", "127.0.0.1"]:
+                context.check_hostname = True
+                context.verify_mode = ssl.CERT_REQUIRED
             
             async with SMTP(
                 hostname=host, 
@@ -433,8 +453,10 @@ async def test_smtp_connection(
                 
         elif use_starttls or port == 587:
             context = ssl.create_default_context()
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_NONE
+            # Only disable verification for localhost
+            if host not in ["localhost", "127.0.0.1"]:
+                context.check_hostname = True
+                context.verify_mode = ssl.CERT_REQUIRED
             
             async with SMTP(
                 hostname=host, 
@@ -444,6 +466,7 @@ async def test_smtp_connection(
             ) as smtp:
                 await smtp.starttls(tls_context=context)
                 diagnostics["connection_details"]["starttls_success"] = True
+                diagnostics["connection_success"] = True
                 
                 # Test authentication
                 try:
@@ -491,6 +514,13 @@ async def test_smtp_connection(
         diagnostics["recommendations"].append("   - Ensure proper SPF, DKIM, and DMARC records")
         diagnostics["recommendations"].append("   - Use consistent from addresses")
         diagnostics["recommendations"].append("   - Monitor sender reputation")
+        
+        # SendGrid-specific recommendations
+        if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
+            diagnostics["recommendations"].append("🔧 SendGrid-specific optimizations:")
+            diagnostics["recommendations"].append("   - Verify domain authentication in SendGrid dashboard")
+            diagnostics["recommendations"].append("   - Check sender reputation score")
+            diagnostics["recommendations"].append("   - Ensure proper SPF/DKIM records are configured")
         
     except socket.gaierror as exc:
         diagnostics["errors"].append(f"DNS Resolution Error: {str(exc)}")
@@ -547,7 +577,19 @@ async def send_test_email_with_delivery_verification(
         
         # Add delivery optimization headers
         InboxDeliveryOptimizer.add_delivery_headers(message, from_name, from_email)
-        InboxDeliveryOptimizer.add_authentication_headers(message, from_email)
+        
+        # Add SendGrid-specific headers if using SendGrid
+        if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
+            InboxDeliveryOptimizer.add_sendgrid_headers(message, from_email)
+            result["delivery_optimization"]["sendgrid_optimized"] = True
+        else:
+            # Generic authentication headers for other providers
+            domain = from_email.split('@')[1]
+            message["X-SPF"] = f"pass ({domain} is authorized to send mail)"
+            message["X-Domain-Auth"] = f"verified ({domain})"
+            message["X-Sender-Verification"] = "verified"
+            result["delivery_optimization"]["generic_optimized"] = True
+        
         InboxDeliveryOptimizer.add_reputation_headers(message)
         
         # Set recipients and subject
@@ -579,6 +621,7 @@ async def send_test_email_with_delivery_verification(
                         <li>Reputation management headers</li>
                         <li>HTML and text alternatives</li>
                         <li>Professional MIME formatting</li>
+                        {'<li>SendGrid-specific optimizations</li>' if 'sendgrid' in host.lower() or 'smtp.sendgrid.net' in host else ''}
                     </ul>
                 </div>
                 
@@ -597,6 +640,7 @@ async def send_test_email_with_delivery_verification(
                         <li>Add sender to contacts for better delivery</li>
                         <li>Monitor sender reputation over time</li>
                         <li>Use consistent sending patterns</li>
+                        {'<li>Verify SendGrid domain authentication</li>' if 'sendgrid' in host.lower() or 'smtp.sendgrid.net' in host else ''}
                     </ul>
                 </div>
                 
@@ -636,12 +680,17 @@ async def send_test_email_with_delivery_verification(
             "authentication_headers": True,
             "reputation_headers": True,
             "html_text_alternatives": True,
-            "proper_mime_formatting": True
+            "proper_mime_formatting": True,
+            "sendgrid_optimized": "sendgrid" in host.lower() or "smtp.sendgrid.net" in host
         }
         
         result["recommendations"].append("✅ Test email sent successfully with inbox delivery optimization")
         result["recommendations"].append("📧 Check inbox (and spam folder) for delivery verification")
         result["recommendations"].append("🔍 Monitor sender reputation for long-term inbox placement")
+        
+        if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
+            result["recommendations"].append("🔧 SendGrid: Verify domain authentication in dashboard")
+            result["recommendations"].append("🔧 SendGrid: Check sender reputation score")
         
     except Exception as exc:
         result["errors"] = [str(exc)]

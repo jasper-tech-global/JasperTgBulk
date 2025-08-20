@@ -10,7 +10,7 @@ from app.core.database import session_factory
 from app.core.security import SecretBox
 from app.models import CustomerAllowlist, Template, SmtpProfile
 from app.services.template_renderer import render_template_string
-from app.services.email_sender import send_email_smtp, EmailSendError
+from app.services.email_sender import send_email_smtp, send_email_with_random_smtp, EmailSendError
 from app.utils.parsing import parse_command_text
 
 
@@ -21,45 +21,74 @@ async def handle_start(message: Message) -> None:
 async def handle_any_command(message: Message) -> None:
     chat_id = message.chat.id
     async with session_factory() as session:  # type: AsyncSession
+        # Check if user is allowed
         allowed = await session.execute(select(CustomerAllowlist).where(CustomerAllowlist.chat_id == chat_id))
         if not allowed.scalars().first():
             await message.answer("You are not a customer. Contact admin.")
             return
+        
         try:
             code, recipient, variables = parse_command_text(message.text or "")
         except ValueError as exc:
             await message.answer("Invalid command format. Use /code email key=value")
             return
+        
+        # Get template
         tmpl_row = await session.execute(select(Template).where(Template.code == code, Template.active == True))
         template = tmpl_row.scalars().first()
         if not template:
             await message.answer("Unknown or inactive template code.")
             return
-        smtp_row = await session.get(SmtpProfile, template.smtp_profile_id)
-        if not smtp_row:
-            await message.answer("SMTP profile not found.")
-            return
-        box = SecretBox(settings.fernet_key)
-        password = box.decrypt(smtp_row.encrypted_password)
-        subject = render_template_string(template.subject_template, variables)
-        body = render_template_string(template.body_template, variables)
+        
+        # Check if template has SMTP profile assigned
+        if hasattr(template, 'smtp_profile_id') and template.smtp_profile_id:
+            # Try to use template-specific SMTP profile first
+            smtp_row = await session.get(SmtpProfile, template.smtp_profile_id)
+            if smtp_row and smtp_row.active:
+                try:
+                    box = SecretBox(settings.fernet_key)
+                    password = box.decrypt(smtp_row.encrypted_password)
+                    subject = render_template_string(template.subject_template, variables)
+                    body = render_template_string(template.body_template, variables)
+                    
+                    await send_email_smtp(
+                        host=smtp_row.host,
+                        port=smtp_row.port,
+                        username=smtp_row.username,
+                        password=password,
+                        use_tls=smtp_row.use_tls,
+                        use_starttls=smtp_row.use_starttls,
+                        from_name=smtp_row.from_name,
+                        from_email=smtp_row.from_email,
+                        to_email=recipient,
+                        subject=subject,
+                        html_body=body,
+                    )
+                    await message.answer("Sent.")
+                    return
+                except EmailSendError as exc:
+                    await message.answer(f"Send failed with template SMTP: {str(exc)}")
+                    # Fall back to random SMTP selection
+        
+        # Use random SMTP profile selection as fallback
         try:
-            await send_email_smtp(
-                host=smtp_row.host,
-                port=smtp_row.port,
-                username=smtp_row.username,
-                password=password,
-                use_tls=smtp_row.use_tls,
-                use_starttls=smtp_row.use_starttls,
-                from_name=smtp_row.from_name,
-                from_email=smtp_row.from_email,
+            subject = render_template_string(template.subject_template, variables)
+            body = render_template_string(template.body_template, variables)
+            
+            result = await send_email_with_random_smtp(
+                session=session,
                 to_email=recipient,
                 subject=subject,
                 html_body=body,
+                timeout=30.0
             )
+            
             await message.answer("Sent.")
+            
         except EmailSendError as exc:
-            await message.answer("Send failed.")
+            await message.answer(f"Send failed: {str(exc)}")
+        except Exception as exc:
+            await message.answer(f"Unexpected error: {str(exc)}")
 
 
 async def run_bot() -> None:

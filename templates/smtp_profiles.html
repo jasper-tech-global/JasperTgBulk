@@ -182,7 +182,7 @@
                         <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
                             <i class="fas fa-globe mr-2" style="color: var(--green-600-text);"></i>SMTP Host
                         </label>
-                        <input type="text" name="host" id="profile-host" required class="form-input-enhanced" placeholder="e.g., smtp.gmail.com">
+                        <input type="text" name="host" id="profile-host" required class="form-input-enhanced" placeholder="e.g., smtp.gmail.com" onchange="showConfigurationGuide(this.value)">
                     </div>
                     
                     <div class="space-y-2">
@@ -236,6 +236,48 @@
                             <input type="checkbox" name="use_starttls" id="profile-use-starttls" class="form-checkbox-enhanced" checked>
                             <span class="text-sm font-medium" style="color: var(--text-primary);">Use STARTTLS</span>
                         </label>
+                    </div>
+                    
+                    <!-- SendGrid Configuration Guide -->
+                    <div id="sendgrid-guide" class="mt-4 p-4 rounded-lg hidden" style="background: #eff6ff; border: 1px solid #93c5fd;">
+                        <h5 class="font-semibold mb-2 text-sm" style="color: #1e40af;">
+                            <i class="fas fa-info-circle mr-2"></i>SendGrid Configuration Guide
+                        </h5>
+                        <div class="text-xs space-y-1" style="color: #1d4ed8;">
+                            <p><strong>Host:</strong> smtp.sendgrid.net</p>
+                            <p><strong>Port:</strong> 587 (STARTTLS) or 465 (TLS)</p>
+                            <p><strong>Username:</strong> apikey</p>
+                            <p><strong>Password:</strong> Your SendGrid API Key</p>
+                            <p><strong>Security:</strong> Enable STARTTLS for port 587, TLS for port 465</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Gmail Configuration Guide -->
+                    <div id="gmail-guide" class="mt-4 p-4 rounded-lg hidden" style="background: #f0fdf4; border: 1px solid #86efac;">
+                        <h5 class="font-semibold mb-2 text-sm" style="color: #166534;">
+                            <i class="fas fa-info-circle mr-2"></i>Gmail Configuration Guide
+                        </h5>
+                        <div class="text-xs space-y-1" style="color: #15803d;">
+                            <p><strong>Host:</strong> smtp.gmail.com</p>
+                            <p><strong>Port:</strong> 587 (STARTTLS) or 465 (TLS)</p>
+                            <p><strong>Username:</strong> your-email@gmail.com</p>
+                            <p><strong>Password:</strong> App Password (not regular password)</p>
+                            <p><strong>Security:</strong> Enable STARTTLS for port 587, TLS for port 465</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Outlook Configuration Guide -->
+                    <div id="outlook-guide" class="mt-4 p-4 rounded-lg hidden" style="background: #faf5ff; border: 1px solid #c4b5fd;">
+                        <h5 class="font-semibold mb-2 text-sm" style="color: #7c3aed;">
+                            <i class="fas fa-info-circle mr-2"></i>Outlook Configuration Guide
+                        </h5>
+                        <div class="text-xs space-y-1" style="color: #7c2d12;">
+                            <p><strong>Host:</strong> smtp-mail.outlook.com</p>
+                            <p><strong>Port:</strong> 587 (STARTTLS)</p>
+                            <p><strong>Username:</strong> your-email@outlook.com</p>
+                            <p><strong>Password:</strong> Your account password</p>
+                            <p><strong>Security:</strong> Enable STARTTLS</p>
+                        </div>
                     </div>
                 </div>
 
@@ -564,6 +606,26 @@ function deleteSMTP(profileId) {
 function testSMTP(profileId) {
     currentProfileId = profileId;
     openTestModal();
+}
+
+function showConfigurationGuide(host) {
+    const sendgridGuide = document.getElementById('sendgrid-guide');
+    const gmailGuide = document.getElementById('gmail-guide');
+    const outlookGuide = document.getElementById('outlook-guide');
+
+    // Hide all guides first
+    sendgridGuide.classList.add('hidden');
+    gmailGuide.classList.add('hidden');
+    outlookGuide.classList.add('hidden');
+
+    // Show relevant guide based on host
+    if (host && host.toLowerCase().includes('sendgrid.net')) {
+        sendgridGuide.classList.remove('hidden');
+    } else if (host && host.toLowerCase().includes('gmail.com')) {
+        gmailGuide.classList.remove('hidden');
+    } else if (host && host.toLowerCase().includes('outlook.com')) {
+        outlookGuide.classList.remove('hidden');
+    }
 }
 
 // Close modals when clicking outside

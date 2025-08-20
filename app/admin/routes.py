@@ -361,13 +361,108 @@ async def templates_create(
     subject_template: str = Form(...),
     body_template: str = Form(...),
     active: bool = Form(False),
+    smtp_profile_id: int = Form(...),
     session: AsyncSession = Depends(get_session),
     admin=Depends(require_admin),
 ):
-    row = Template(code=code, subject_template=subject_template, body_template=body_template, active=active)
-    session.add(row)
-    await session.commit()
-    return RedirectResponse("/templates", status_code=status.HTTP_302_FOUND)
+    try:
+        # Verify SMTP profile exists and is active
+        smtp_profile = await session.get(SmtpProfile, smtp_profile_id)
+        if not smtp_profile:
+            raise HTTPException(status_code=400, detail="Selected SMTP profile not found")
+        
+        if not smtp_profile.active:
+            raise HTTPException(status_code=400, detail="Selected SMTP profile is not active")
+        
+        row = Template(
+            code=code, 
+            subject_template=subject_template, 
+            body_template=body_template, 
+            active=active,
+            smtp_profile_id=smtp_profile_id
+        )
+        session.add(row)
+        await session.commit()
+        
+        return RedirectResponse("/templates", status_code=status.HTTP_302_FOUND)
+        
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to create template: {str(e)}")
+
+
+@router.post("/templates/{template_id}/edit")
+async def templates_edit(
+    template_id: int,
+    code: str = Form(...),
+    subject_template: str = Form(...),
+    body_template: str = Form(...),
+    active: bool = Form(False),
+    smtp_profile_id: int = Form(...),
+    session: AsyncSession = Depends(get_session),
+    admin=Depends(require_admin),
+):
+    """Edit an existing template"""
+    try:
+        # Get the template to edit
+        template = await session.get(Template, template_id)
+        if not template:
+            raise HTTPException(status_code=404, detail="Template not found")
+        
+        # Verify SMTP profile exists and is active
+        smtp_profile = await session.get(SmtpProfile, smtp_profile_id)
+        if not smtp_profile:
+            raise HTTPException(status_code=400, detail="Selected SMTP profile not found")
+        
+        if not smtp_profile.active:
+            raise HTTPException(status_code=400, detail="Selected SMTP profile is not active")
+        
+        # Update template fields
+        template.code = code
+        template.subject_template = subject_template
+        template.body_template = body_template
+        template.active = active
+        template.smtp_profile_id = smtp_profile_id
+        
+        await session.commit()
+        
+        return RedirectResponse("/templates", status_code=status.HTTP_302_FOUND)
+        
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to edit template: {str(e)}")
+
+
+@router.get("/api/templates/{template_id}")
+async def get_template_api(
+    template_id: int,
+    session: AsyncSession = Depends(get_session),
+    admin=Depends(require_admin),
+):
+    """Get template data for editing"""
+    try:
+        template = await session.get(Template, template_id)
+        if not template:
+            raise HTTPException(status_code=404, detail="Template not found")
+        
+        # Get SMTP profile info
+        smtp_profile = await session.get(SmtpProfile, template.smtp_profile_id) if template.smtp_profile_id else None
+        
+        return JSONResponse({
+            "success": True,
+            "template": {
+                "id": template.id,
+                "code": template.code,
+                "subject_template": template.subject_template,
+                "body_template": template.body_template,
+                "active": template.active,
+                "smtp_profile_id": template.smtp_profile_id,
+                "smtp_profile_name": smtp_profile.name if smtp_profile else None
+            }
+        })
+        
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
 @router.post("/api/send-email")
@@ -483,3 +578,30 @@ async def templates_delete(row_id: int, session: AsyncSession = Depends(get_sess
     await session.execute(delete(Template).where(Template.id == row_id))
     await session.commit()
     return RedirectResponse("/templates", status_code=status.HTTP_302_FOUND)
+
+
+@router.get("/api/smtp")
+async def get_smtp_profiles_api(session: AsyncSession = Depends(get_session), admin=Depends(require_admin)):
+    """Get all SMTP profiles for dropdown selection"""
+    try:
+        stmt = select(SmtpProfile).order_by(SmtpProfile.name)
+        result = await session.execute(stmt)
+        profiles = result.scalars().all()
+        
+        return JSONResponse({
+            "success": True,
+            "profiles": [
+                {
+                    "id": profile.id,
+                    "name": profile.name,
+                    "host": profile.host,
+                    "port": profile.port,
+                    "from_email": profile.from_email,
+                    "active": profile.active
+                }
+                for profile in profiles
+            ]
+        })
+        
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
