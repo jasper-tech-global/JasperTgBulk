@@ -41,23 +41,14 @@
                  <!-- SMTP Information Box -->
                  <div class="p-4 rounded-xl" style="background: var(--info-box-bg); border: 1px solid var(--info-box-border);">
                      <h4 class="font-semibold mb-2 flex items-center" style="color: var(--info-title-color);">
-                         <i class="fas fa-info-circle mr-2"></i>SMTP Profile Selection
+                         <i class="fas fa-info-circle mr-2"></i>Smart SMTP Selection
                      </h4>
                      <div class="text-sm space-y-1" style="color: var(--info-text-color);">
-                         <div>✅ <strong>Choose specific SMTP profile for this template</strong></div>
-                         <div>✅ System will use selected SMTP profile for emails from this template</div>
-                         <div>✅ If SMTP profile fails, system falls back to random selection</div>
-                         <div>✅ Better control over email delivery and branding</div>
-                     </div>
-                     
-                     <div class="mt-3">
-                         <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                             <i class="fas fa-server mr-2" style="color: var(--orange-600-text);"></i>SMTP Profile
-                         </label>
-                         <select name="smtp_profile_id" required class="form-input-enhanced">
-                             <option value="">Select SMTP Profile</option>
-                             <!-- SMTP profiles will be populated via JavaScript -->
-                         </select>
+                         <div>✅ <strong>No SMTP profile linking required!</strong></div>
+                         <div>✅ System automatically selects random SMTP profiles for each email</div>
+                         <div>✅ Load balancing across all active SMTP servers</div>
+                         <div>✅ Better deliverability and rate limit avoidance</div>
+                         <div>✅ Automatic inbox delivery optimization applied</div>
                      </div>
                  </div>
 
@@ -577,30 +568,8 @@ document.getElementById('preview-modal').addEventListener('click', function(e) {
 
 // Load SMTP profiles when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    loadSmtpProfilesForCreate();
+    // No SMTP loading needed - templates use random selection
 });
-
-// Load SMTP profiles for template creation form
-async function loadSmtpProfilesForCreate() {
-    try {
-        const response = await fetch('/api/smtp');
-        const data = await response.json();
-        
-        if (data.success) {
-            const select = document.querySelector('form[action="/templates"] select[name="smtp_profile_id"]');
-            if (select) {
-                data.profiles.forEach(profile => {
-                    const option = document.createElement('option');
-                    option.value = profile.id;
-                    option.textContent = `${profile.name} (${profile.host}:${profile.port})`;
-                    select.appendChild(option);
-                });
-            }
-        }
-    } catch (error) {
-        console.error('Failed to load SMTP profiles:', error);
-    }
-}
 
 // Edit Template Modal
 let editModal = null;
@@ -648,16 +617,6 @@ function showEditModal(template) {
                             <input type="checkbox" name="active" ${template.active ? 'checked' : ''} class="form-checkbox-enhanced">
                             <span class="text-sm font-medium" style="color: var(--text-primary);">Active</span>
                         </label>
-                        
-                        <div class="space-y-2">
-                            <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                                <i class="fas fa-server mr-2" style="color: var(--orange-600-text);"></i>SMTP Profile
-                            </label>
-                            <select name="smtp_profile_id" required class="form-input-enhanced">
-                                <option value="">Select SMTP Profile</option>
-                                <!-- SMTP profiles will be populated via JavaScript -->
-                            </select>
-                        </div>
                     </div>
                     
                     <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
@@ -676,42 +635,12 @@ function showEditModal(template) {
     // Add modal to page
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     editModal = document.getElementById('edit-modal');
-    
-    // Load SMTP profiles for dropdown
-    loadSmtpProfiles();
 }
 
 function closeEditModal() {
     if (editModal) {
         editModal.remove();
         editModal = null;
-    }
-}
-
-async function loadSmtpProfiles() {
-    try {
-        const response = await fetch('/api/smtp');
-        const data = await response.json();
-        
-        if (data.success) {
-            const select = document.querySelector('select[name="smtp_profile_id"]');
-            if (select) {
-                data.profiles.forEach(profile => {
-                    const option = document.createElement('option');
-                    option.value = profile.id;
-                    option.textContent = `${profile.name} (${profile.host}:${profile.port})`;
-                    
-                    // Pre-select current SMTP profile
-                    if (profile.id === currentEditingTemplate.smtp_profile_id) {
-                        option.selected = true;
-                    }
-                    
-                    select.appendChild(option);
-                });
-            }
-        }
-    } catch (error) {
-        console.error('Failed to load SMTP profiles:', error);
     }
 }
 

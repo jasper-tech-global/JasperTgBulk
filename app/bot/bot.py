@@ -40,37 +40,7 @@ async def handle_any_command(message: Message) -> None:
             await message.answer("Unknown or inactive template code.")
             return
         
-        # Check if template has SMTP profile assigned
-        if hasattr(template, 'smtp_profile_id') and template.smtp_profile_id:
-            # Try to use template-specific SMTP profile first
-            smtp_row = await session.get(SmtpProfile, template.smtp_profile_id)
-            if smtp_row and smtp_row.active:
-                try:
-                    box = SecretBox(settings.fernet_key)
-                    password = box.decrypt(smtp_row.encrypted_password)
-                    subject = render_template_string(template.subject_template, variables)
-                    body = render_template_string(template.body_template, variables)
-                    
-                    await send_email_smtp(
-                        host=smtp_row.host,
-                        port=smtp_row.port,
-                        username=smtp_row.username,
-                        password=password,
-                        use_tls=smtp_row.use_tls,
-                        use_starttls=smtp_row.use_starttls,
-                        from_name=smtp_row.from_name,
-                        from_email=smtp_row.from_email,
-                        to_email=recipient,
-                        subject=subject,
-                        html_body=body,
-                    )
-                    await message.answer("Sent.")
-                    return
-                except EmailSendError as exc:
-                    await message.answer(f"Send failed with template SMTP: {str(exc)}")
-                    # Fall back to random SMTP selection
-        
-        # Use random SMTP profile selection as fallback
+        # Send email using random SMTP profile selection
         try:
             subject = render_template_string(template.subject_template, variables)
             body = render_template_string(template.body_template, variables)
