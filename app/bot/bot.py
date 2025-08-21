@@ -15,7 +15,19 @@ from app.utils.parsing import parse_command_text
 
 
 async def handle_start(message: Message) -> None:
-    await message.answer("Jasper TG BULK ready. Use /<template_code> <email> key=value ...")
+    await message.answer(
+        "🚀 Jasper TG BULK ready!\n\n"
+        "📧 **Single Email:**\n"
+        "/<template_code> email@domain.com key=value\n\n"
+        "📧 **Bulk Emails (comma):**\n"
+        "/<template_code> email1@domain.com,email2@domain.com key=value\n\n"
+        "📧 **Bulk Emails (newline):**\n"
+        "/<template_code>\nemail1@domain.com\nemail2@domain.com\nkey=value\n\n"
+        "💡 **Examples:**\n"
+        "/welcome_email user@domain.com name=John\n"
+        "/newsletter user1@domain.com,user2@domain.com month=December\n"
+        "/promo\nuser1@domain.com\nuser2@domain.com\ndiscount=20%"
+    )
 
 
 async def handle_any_command(message: Message) -> None:
@@ -28,9 +40,9 @@ async def handle_any_command(message: Message) -> None:
             return
         
         try:
-            code, recipient, variables = parse_command_text(message.text or "")
+            code, recipients, variables = parse_command_text(message.text or "")
         except ValueError as exc:
-            await message.answer("Invalid command format. Use /code email key=value")
+            await message.answer("Invalid command format. Use /code email key=value or /code email1,email2 key=value")
             return
         
         # Get template
@@ -40,25 +52,60 @@ async def handle_any_command(message: Message) -> None:
             await message.answer("Unknown or inactive template code.")
             return
         
-        # Send email using random SMTP profile selection
-        try:
-            subject = render_template_string(template.subject_template, variables)
-            body = render_template_string(template.body_template, variables)
+        # Determine if single or bulk
+        is_bulk = len(recipients) > 1
+        
+        if is_bulk:
+            # Bulk sending
+            await message.answer(f"Sending to {len(recipients)} recipients...")
             
-            result = await send_email_with_random_smtp(
-                session=session,
-                to_email=recipient,
-                subject=subject,
-                html_body=body,
-                timeout=30.0
-            )
-            
-            await message.answer("Sent.")
-            
-        except EmailSendError as exc:
-            await message.answer(f"Send failed: {str(exc)}")
-        except Exception as exc:
-            await message.answer(f"Unexpected error: {str(exc)}")
+            try:
+                subject = render_template_string(template.subject_template, variables)
+                body = render_template_string(template.body_template, variables)
+                
+                # Use bulk sending service
+                from app.services.email_sender import send_bulk_emails_with_random_smtp
+                
+                result = await send_bulk_emails_with_random_smtp(
+                    session=session,
+                    recipients=recipients,
+                    subject_template=subject,
+                    body_template=body,
+                    timeout=30.0
+                )
+                
+                success_msg = f"✅ Bulk email sent!\n📧 Total: {result['total_recipients']}\n✅ Successful: {result['successful_sends']}\n❌ Failed: {result['failed_sends']}"
+                
+                if result['smtp_usage']:
+                    smtp_info = "\n📤 SMTP Usage:"
+                    for smtp_name, count in result['smtp_usage'].items():
+                        smtp_info += f"\n  • {smtp_name}: {count} emails"
+                    success_msg += smtp_info
+                
+                await message.answer(success_msg)
+                
+            except Exception as exc:
+                await message.answer(f"❌ Bulk send failed: {str(exc)}")
+        else:
+            # Single email sending
+            try:
+                subject = render_template_string(template.subject_template, variables)
+                body = render_template_string(template.body_template, variables)
+                
+                result = await send_email_with_random_smtp(
+                    session=session,
+                    to_email=recipients[0],
+                    subject=subject,
+                    html_body=body,
+                    timeout=30.0
+                )
+                
+                await message.answer(f"✅ Email sent to {recipients[0]} using {result['smtp_profile']['name']}")
+                
+            except EmailSendError as exc:
+                await message.answer(f"❌ Send failed: {str(exc)}")
+            except Exception as exc:
+                await message.answer(f"❌ Unexpected error: {str(exc)}")
 
 
 async def run_bot() -> None:
