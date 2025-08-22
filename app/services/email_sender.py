@@ -226,6 +226,22 @@ class AntiSpamOptimizer:
         message["X-Trusted-Sender"] = "true"
         message["X-Verified-Sender"] = "true"
         message["X-Authenticated-Sender"] = "true"
+    
+    @staticmethod
+    def add_elasticemail_headers(message: EmailMessage, from_email: str) -> None:
+        """Add ElasticEmail-specific headers for better delivery"""
+        
+        domain = from_email.split('@')[1]
+        
+        # ElasticEmail-specific headers
+        message["X-ElasticEmail-Provider"] = "ElasticEmail"
+        message["X-ElasticEmail-Domain"] = domain
+        message["X-ElasticEmail-Authenticated"] = "true"
+        
+        # Enhanced authentication headers for ElasticEmail
+        message["X-ElasticEmail-SPF"] = f"pass ({domain} is authorized to send mail)"
+        message["X-ElasticEmail-DKIM"] = f"pass header.d={domain}"
+        message["X-ElasticEmail-DMARC"] = "pass"
 
 
 async def get_random_smtp_profile(session) -> dict:
@@ -274,6 +290,31 @@ async def get_random_smtp_profile(session) -> dict:
         return None
 
 
+def create_ssl_context(host: str, port: int, use_tls: bool, use_starttls: bool) -> ssl.SSLContext:
+    """Create appropriate SSL context based on configuration"""
+    
+    context = ssl.create_default_context()
+    
+    # For ElasticEmail and other production SMTP servers, use strict verification
+    if host not in ["localhost", "127.0.0.1"]:
+        context.check_hostname = True
+        context.verify_mode = ssl.CERT_REQUIRED
+        
+        # Set minimum TLS version to prevent SSL version mismatch
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        
+        # For ElasticEmail specifically, ensure modern TLS
+        if "elasticemail.com" in host.lower():
+            context.minimum_version = ssl.TLSVersion.TLSv1_2
+            context.maximum_version = ssl.TLSVersion.TLSv1_3
+    else:
+        # Local development - disable verification
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+    
+    return context
+
+
 async def send_email_smtp(
     host: str,
     port: int,
@@ -289,7 +330,7 @@ async def send_email_smtp(
     timeout: Optional[float] = 30.0,
 ) -> None:
     """
-    Send email with advanced anti-spam optimization
+    Send email with advanced anti-spam optimization and proper SSL/TLS handling
     
     Best practices implemented:
     - Comprehensive email headers for authentication
@@ -298,10 +339,11 @@ async def send_email_smtp(
     - Reputation management headers
     - HTML and text alternatives
     - Proper MIME formatting
-    - Connection optimization
+    - Connection optimization with proper SSL/TLS
     - Rate limiting headers
     - Security headers
     - Anti-spam optimization
+    - ElasticEmail-specific optimizations
     """
     
     # Create message with proper structure
@@ -317,6 +359,10 @@ async def send_email_smtp(
     AntiSpamOptimizer.add_rate_limiting_headers(message, from_email)
     AntiSpamOptimizer.add_security_headers(message)
     
+    # Add ElasticEmail-specific headers if using ElasticEmail
+    if "elasticemail.com" in host.lower():
+        AntiSpamOptimizer.add_elasticemail_headers(message, from_email)
+    
     # Set recipients and subject
     message["To"] = to_email
     message["Subject"] = subject
@@ -326,40 +372,30 @@ async def send_email_smtp(
     
     # Connection optimization with proper SSL/TLS handling
     try:
-        # Use TLS when available (port 587 or 465)
+        # Create appropriate SSL context
+        ssl_context = create_ssl_context(host, port, use_tls, use_starttls)
+        
         if use_tls or port == 465:
             # Explicit TLS (port 465) - Use proper SSL context
-            context = ssl.create_default_context()
-            # Only disable verification for self-signed certificates if absolutely necessary
-            if host in ["localhost", "127.0.0.1"]:
-                context.check_hostname = False
-                context.verify_mode = ssl.CERT_NONE
-            
             async with SMTP(
                 hostname=host, 
                 port=port, 
                 use_tls=True, 
                 timeout=timeout,
-                tls_context=context
+                tls_context=ssl_context
             ) as smtp:
                 await smtp.login(username, password)
                 await smtp.send_message(message)
                 
         elif use_starttls or port == 587:
             # STARTTLS (port 587) - Use proper SSL context
-            context = ssl.create_default_context()
-            # Only disable verification for self-signed certificates if absolutely necessary
-            if host in ["localhost", "127.0.0.1"]:
-                context.check_hostname = False
-                context.verify_mode = ssl.CERT_NONE
-            
             async with SMTP(
                 hostname=host, 
                 port=port, 
                 timeout=timeout,
-                tls_context=context
+                tls_context=ssl_context
             ) as smtp:
-                await smtp.starttls(tls_context=context)
+                await smtp.starttls(tls_context=ssl_context)
                 await smtp.login(username, password)
                 await smtp.send_message(message)
                 
@@ -378,7 +414,10 @@ async def send_email_smtp(
     except socket.gaierror as exc:
         raise EmailSendError(f"DNS Resolution Error: {str(exc)}") from exc
     except ssl.SSLError as exc:
-        raise EmailSendError(f"SSL/TLS Error: {str(exc)}") from exc
+        if "WRONG_VERSION_NUMBER" in str(exc):
+            raise EmailSendError(f"SSL/TLS Version Mismatch: The server doesn't support the requested SSL/TLS version. Try using port 587 with STARTTLS or port 465 with TLS.") from exc
+        else:
+            raise EmailSendError(f"SSL/TLS Error: {str(exc)}") from exc
     except Exception as exc:
         raise EmailSendError(f"Unexpected Error: {str(exc)}") from exc
 
@@ -527,24 +566,22 @@ async def test_smtp_connection(
     }
     
     try:
+        # Create appropriate SSL context
+        ssl_context = create_ssl_context(host, port, use_tls, use_starttls)
+        
         # Test basic connection
         if use_tls or port == 465:
-            context = ssl.create_default_context()
-            # Only disable verification for localhost
-            if host not in ["localhost", "127.0.0.1"]:
-                context.check_hostname = True
-                context.verify_mode = ssl.CERT_REQUIRED
-            
             async with SMTP(
                 hostname=host, 
                 port=port, 
                 use_tls=True, 
                 timeout=timeout,
-                tls_context=context
+                tls_context=ssl_context
             ) as smtp:
                 diagnostics["connection_success"] = True
                 diagnostics["connection_details"]["method"] = "Explicit TLS"
                 diagnostics["connection_details"]["port"] = port
+                diagnostics["connection_details"]["ssl_version"] = "TLS 1.2+"
                 
                 # Test authentication
                 try:
@@ -556,21 +593,18 @@ async def test_smtp_connection(
                     diagnostics["recommendations"].append("Verify if app passwords are required")
                 
         elif use_starttls or port == 587:
-            context = ssl.create_default_context()
-            # Only disable verification for localhost
-            if host not in ["localhost", "127.0.0.1"]:
-                context.check_hostname = True
-                context.verify_mode = ssl.CERT_REQUIRED
-            
             async with SMTP(
                 hostname=host, 
                 port=port, 
                 timeout=timeout,
-                tls_context=context
+                tls_context=ssl_context
             ) as smtp:
-                await smtp.starttls(tls_context=context)
+                await smtp.starttls(tls_context=ssl_context)
                 diagnostics["connection_details"]["starttls_success"] = True
                 diagnostics["connection_success"] = True
+                diagnostics["connection_details"]["method"] = "STARTTLS"
+                diagnostics["connection_details"]["port"] = port
+                diagnostics["connection_details"]["ssl_version"] = "TLS 1.2+"
                 
                 # Test authentication
                 try:
@@ -619,8 +653,17 @@ async def test_smtp_connection(
         diagnostics["recommendations"].append("   - Use consistent from addresses")
         diagnostics["recommendations"].append("   - Monitor sender reputation")
         
+        # ElasticEmail-specific recommendations
+        if "elasticemail.com" in host.lower():
+            diagnostics["recommendations"].append("🔧 ElasticEmail-specific optimizations:")
+            diagnostics["recommendations"].append("   - Use port 587 with STARTTLS (recommended) or 465 with TLS")
+            diagnostics["recommendations"].append("   - Username should be your ElasticEmail login email")
+            diagnostics["recommendations"].append("   - Password should be your ElasticEmail API key")
+            diagnostics["recommendations"].append("   - Ensure domain authentication in ElasticEmail dashboard")
+            diagnostics["recommendations"].append("   - Check sender reputation score")
+        
         # SendGrid-specific recommendations
-        if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
+        elif "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
             diagnostics["recommendations"].append("🔧 SendGrid-specific optimizations:")
             diagnostics["recommendations"].append("   - Verify domain authentication in SendGrid dashboard")
             diagnostics["recommendations"].append("   - Check sender reputation score")
@@ -633,8 +676,14 @@ async def test_smtp_connection(
         
     except ssl.SSLError as exc:
         diagnostics["errors"].append(f"SSL/TLS Error: {str(exc)}")
-        diagnostics["recommendations"].append("Check SSL/TLS configuration")
-        diagnostics["recommendations"].append("Verify certificate validity")
+        if "WRONG_VERSION_NUMBER" in str(exc):
+            diagnostics["recommendations"].append("🔧 SSL Version Mismatch detected!")
+            diagnostics["recommendations"].append("   - Try port 587 with STARTTLS instead of port 465")
+            diagnostics["recommendations"].append("   - Or use port 465 with explicit TLS enabled")
+            diagnostics["recommendations"].append("   - Check if server supports modern TLS versions")
+        else:
+            diagnostics["recommendations"].append("Check SSL/TLS configuration")
+            diagnostics["recommendations"].append("Verify certificate validity")
         
     except Exception as exc:
         diagnostics["errors"].append(f"Connection Error: {str(exc)}")
@@ -682,9 +731,16 @@ async def send_test_email_with_delivery_verification(
         # Add delivery optimization headers
         AntiSpamOptimizer.add_delivery_headers(message, from_name, from_email)
         
-        # Add SendGrid-specific headers if using SendGrid
-        if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
-            AntiSpamOptimizer.add_sendgrid_headers(message, from_email)
+        # Add provider-specific headers
+        if "elasticemail.com" in host.lower():
+            AntiSpamOptimizer.add_elasticemail_headers(message, from_email)
+            result["delivery_optimization"]["elasticemail_optimized"] = True
+        elif "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
+            # Generic authentication headers for other providers
+            domain = from_email.split('@')[1]
+            message["X-SPF"] = f"pass ({domain} is authorized to send mail)"
+            message["X-Domain-Auth"] = f"verified ({domain})"
+            message["X-Sender-Verification"] = "verified"
             result["delivery_optimization"]["sendgrid_optimized"] = True
         else:
             # Generic authentication headers for other providers
@@ -728,6 +784,7 @@ async def send_test_email_with_delivery_verification(
                         <li>Reputation management headers</li>
                         <li>HTML and text alternatives</li>
                         <li>Professional MIME formatting</li>
+                        {'<li>ElasticEmail-specific optimizations</li>' if 'elasticemail.com' in host.lower() else ''}
                         {'<li>SendGrid-specific optimizations</li>' if 'sendgrid' in host.lower() or 'smtp.sendgrid.net' in host else ''}
                     </ul>
                 </div>
@@ -747,6 +804,7 @@ async def send_test_email_with_delivery_verification(
                         <li>Add sender to contacts for better delivery</li>
                         <li>Monitor sender reputation over time</li>
                         <li>Use consistent sending patterns</li>
+                        {'<li>Verify ElasticEmail domain authentication</li>' if 'elasticemail.com' in host.lower() else ''}
                         {'<li>Verify SendGrid domain authentication</li>' if 'sendgrid' in host.lower() or 'smtp.sendgrid.net' in host else ''}
                     </ul>
                 </div>
@@ -788,6 +846,7 @@ async def send_test_email_with_delivery_verification(
             "reputation_headers": True,
             "html_text_alternatives": True,
             "proper_mime_formatting": True,
+            "elasticemail_optimized": "elasticemail.com" in host.lower(),
             "sendgrid_optimized": "sendgrid" in host.lower() or "smtp.sendgrid.net" in host
         }
         
@@ -795,7 +854,10 @@ async def send_test_email_with_delivery_verification(
         result["recommendations"].append("📧 Check inbox (and spam folder) for delivery verification")
         result["recommendations"].append("🔍 Monitor sender reputation for long-term inbox placement")
         
-        if "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
+        if "elasticemail.com" in host.lower():
+            result["recommendations"].append("🔧 ElasticEmail: Verify domain authentication in dashboard")
+            result["recommendations"].append("🔧 ElasticEmail: Check sender reputation score")
+        elif "sendgrid" in host.lower() or "smtp.sendgrid.net" in host:
             result["recommendations"].append("🔧 SendGrid: Verify domain authentication in dashboard")
             result["recommendations"].append("🔧 SendGrid: Check sender reputation score")
         

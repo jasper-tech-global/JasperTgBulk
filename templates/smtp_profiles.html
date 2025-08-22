@@ -166,7 +166,7 @@
             </div>
 
             <!-- Modal Form -->
-            <form id="smtp-form" method="POST" class="p-6 space-y-6">
+            <form id="smtp-form" method="POST" onsubmit="return submitSMTPForm()" class="p-6 space-y-6">
                 <input type="hidden" id="profile-id" name="profile_id">
                 
                 <!-- Basic Information -->
@@ -178,105 +178,149 @@
                         <input type="text" name="name" id="profile-name" required class="form-input-enhanced" placeholder="e.g., Gmail, Outlook, Company SMTP">
                     </div>
                     
-                    <div class="space-y-2">
-                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                            <i class="fas fa-globe mr-2" style="color: var(--green-600-text);"></i>SMTP Host
-                        </label>
-                        <input type="text" name="host" id="profile-host" required class="form-input-enhanced" placeholder="e.g., smtp.gmail.com" onchange="showConfigurationGuide(this.value)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label" style="color: var(--text-primary); font-weight: 600;">SMTP Host</label>
+                            <input type="text" name="host" id="profile-host" required class="form-input-enhanced" placeholder="e.g., smtp.elasticemail.com" onchange="showConfigurationGuide(this.value)">
+                            <p class="text-xs mt-1" style="color: var(--text-secondary);">SMTP server address</p>
+                        </div>
+                        <div>
+                            <label class="form-label" style="color: var(--text-primary); font-weight: 600;">Port</label>
+                            <input type="number" name="port" id="profile-port" required class="form-input-enhanced" value="587" min="1" max="65535">
+                            <p class="text-xs mt-1" style="color: var(--text-secondary);">587 (STARTTLS) or 465 (TLS)</p>
+                        </div>
                     </div>
-                    
-                    <div class="space-y-2">
-                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                            <i class="fas fa-bolt mr-2" style="color: var(--purple-600-text);"></i>Port
-                        </label>
-                        <input type="number" name="port" id="profile-port" required class="form-input-enhanced" value="587" min="1" max="65535">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label" style="color: var(--text-primary); font-weight: 600;">Username</label>
+                            <input type="text" name="username" id="profile-username" required class="form-input-enhanced" placeholder="your-email@domain.com">
+                            <p class="text-xs mt-1" style="color: var(--text-secondary);">Email address or API username</p>
+                        </div>
+                        <div>
+                            <label class="form-label" style="color: var(--text-primary); font-weight: 600;">Password/API Key</label>
+                            <input type="password" name="password" id="profile-password" class="form-input-enhanced" placeholder="App password or API key">
+                            <p class="text-xs mt-1" style="color: var(--text-secondary);">Password or API key for authentication</p>
+                        </div>
                     </div>
-                    
-                    <div class="space-y-2">
-                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                            <i class="fas fa-user mr-2" style="color: var(--orange-600-text);"></i>Username
-                        </label>
-                        <input type="text" name="username" id="profile-username" required class="form-input-enhanced" placeholder="your-email@gmail.com">
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                            <i class="fas fa-lock mr-2" style="color: var(--red-600-text);"></i>Password
-                        </label>
-                        <input type="password" name="password" id="profile-password" class="form-input-enhanced" placeholder="App password or regular password">
-                        <p class="text-xs" style="color: var(--text-secondary);">Leave empty to keep existing password when editing</p>
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                            <i class="fas fa-envelope mr-2" style="color: var(--pink-600-text);"></i>From Email
-                        </label>
-                        <input type="email" name="from_email" id="profile-from-email" required class="form-input-enhanced" placeholder="noreply@yourcompany.com">
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label class="form-label" style="color: var(--text-primary); font-weight: 600;">
-                            <i class="fas fa-building mr-2" style="color: var(--blue-600-text);"></i>From Name
-                        </label>
-                        <input type="text" name="from_name" id="profile-from-name" class="form-input-enhanced" placeholder="Your Company Name">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label" style="color: var(--text-primary); font-weight: 600;">From Email</label>
+                            <input type="email" name="from_email" id="profile-from-email" required class="form-input-enhanced" placeholder="noreply@yourcompany.com">
+                            <p class="text-xs mt-1" style="color: var(--text-secondary);">Sender email address</p>
+                        </div>
+                        <div>
+                            <label class="form-label" style="color: var(--text-primary); font-weight: 600;">From Name</label>
+                            <input type="text" name="from_name" id="profile-from-name" class="form-input-enhanced" placeholder="Your Company Name">
+                            <p class="text-xs mt-1" style="color: var(--text-secondary);">Display name for sender (optional)</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Security Configuration -->
-                <div class="p-6 rounded-xl border-2" style="background: var(--bg-secondary); border-color: var(--border-color);">
-                    <h4 class="text-lg font-semibold mb-4 flex items-center" style="color: var(--text-primary);">
-                        <i class="fas fa-shield-alt mr-2" style="color: var(--green-600-text);"></i>Security Configuration
-                    </h4>
-                    <div class="flex items-center space-x-8">
-                        <label class="flex items-center space-x-3 cursor-pointer">
+                <!-- Security Settings -->
+                <div class="space-y-3">
+                    <label class="form-label" style="color: var(--text-primary); font-weight: 600;">Security Settings</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center space-x-3">
                             <input type="checkbox" name="use_tls" id="profile-use-tls" class="form-checkbox-enhanced">
-                            <span class="text-sm font-medium" style="color: var(--text-primary);">Use TLS</span>
-                        </label>
-                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <label for="profile-use-tls" class="text-sm" style="color: var(--text-primary);">Use TLS (port 465)</label>
+                        </div>
+                        <div class="flex items-center space-x-3">
                             <input type="checkbox" name="use_starttls" id="profile-use-starttls" class="form-checkbox-enhanced" checked>
-                            <span class="text-sm font-medium" style="color: var(--text-primary);">Use STARTTLS</span>
-                        </label>
+                            <label for="profile-use-starttls" class="text-sm" style="color: var(--text-primary);">Use STARTTLS (port 587)</label>
+                        </div>
                     </div>
-                    
-                    <!-- SendGrid Configuration Guide -->
-                    <div id="sendgrid-guide" class="mt-4 p-4 rounded-lg hidden" style="background: #eff6ff; border: 1px solid #93c5fd;">
-                        <h5 class="font-semibold mb-2 text-sm" style="color: #1e40af;">
-                            <i class="fas fa-info-circle mr-2"></i>SendGrid Configuration Guide
-                        </h5>
-                        <div class="text-xs space-y-1" style="color: #1d4ed8;">
+                    <p class="text-xs" style="color: var(--text-secondary);">💡 For ElasticEmail: Use port 587 with STARTTLS (recommended) or port 465 with TLS</p>
+                </div>
+
+                <!-- Configuration Guides -->
+                <div class="space-y-4 mt-6">
+                    <!-- ElasticEmail Guide -->
+                    <div id="elasticemail-guide" class="hidden p-4 rounded-lg border-2" style="background: var(--bg-secondary); border-color: var(--blue-200);">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--blue-600-bg);">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <h4 class="font-semibold" style="color: var(--text-primary);">ElasticEmail Configuration</h4>
+                        </div>
+                        <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+                            <p><strong>Host:</strong> smtp.elasticemail.com</p>
+                            <p><strong>Port:</strong> 587 (STARTTLS) or 465 (TLS)</p>
+                            <p><strong>Username:</strong> Your ElasticEmail login email</p>
+                            <p><strong>Password:</strong> Your ElasticEmail API key</p>
+                            <p><strong>Security:</strong> Enable STARTTLS for port 587, or TLS for port 465</p>
+                        </div>
+                        <div class="mt-3 p-3 rounded" style="background: var(--blue-50);">
+                            <p class="text-xs font-medium" style="color: var(--blue-700);">
+                                💡 <strong>Pro Tip:</strong> Port 587 with STARTTLS is recommended for better compatibility and security.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Gmail Guide -->
+                    <div id="gmail-guide" class="hidden p-4 rounded-lg border-2" style="background: var(--bg-secondary); border-color: var(--green-200);">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--green-600-bg);">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <h4 class="font-semibold" style="color: var(--text-primary);">Gmail Configuration</h4>
+                        </div>
+                        <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+                            <p><strong>Host:</strong> smtp.gmail.com</p>
+                            <p><strong>Port:</strong> 587 (STARTTLS)</p>
+                            <p><strong>Username:</strong> Your Gmail address</p>
+                            <p><strong>Password:</strong> App password (not regular password)</p>
+                            <p><strong>Security:</strong> Enable STARTTLS</p>
+                        </div>
+                        <div class="mt-3 p-3 rounded" style="background: var(--green-50);">
+                            <p class="text-xs font-medium" style="color: var(--green-700);">
+                                🔐 <strong>Security:</strong> You need to generate an App Password in your Google Account settings.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Outlook Guide -->
+                    <div id="outlook-guide" class="hidden p-4 rounded-lg border-2" style="background: var(--bg-secondary); border-color: var(--blue-200);">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--blue-600-bg);">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <h4 class="font-semibold" style="color: var(--text-primary);">Outlook Configuration</h4>
+                        </div>
+                        <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
+                            <p><strong>Host:</strong> smtp-mail.outlook.com</p>
+                            <p><strong>Port:</strong> 587 (STARTTLS)</p>
+                            <p><strong>Username:</strong> Your Outlook email address</p>
+                            <p><strong>Password:</strong> Your Outlook password</p>
+                            <p><strong>Security:</strong> Enable STARTTLS</p>
+                        </div>
+                        <div class="mt-3 p-3 rounded" style="background: var(--blue-50);">
+                            <p class="text-xs font-medium" style="color: var(--blue-700);">
+                                ⚠️ <strong>Note:</strong> You may need to enable "Less secure app access" in your Outlook account.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- SendGrid Guide -->
+                    <div id="sendgrid-guide" class="hidden p-4 rounded-lg border-2" style="background: var(--bg-secondary); border-color: var(--orange-200);">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--orange-600-bg);">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <h4 class="font-semibold" style="color: var(--text-primary);">SendGrid Configuration</h4>
+                        </div>
+                        <div class="space-y-2 text-sm" style="color: var(--text-secondary);">
                             <p><strong>Host:</strong> smtp.sendgrid.net</p>
                             <p><strong>Port:</strong> 587 (STARTTLS) or 465 (TLS)</p>
                             <p><strong>Username:</strong> apikey</p>
-                            <p><strong>Password:</strong> Your SendGrid API Key</p>
-                            <p><strong>Security:</strong> Enable STARTTLS for port 587, TLS for port 465</p>
+                            <p><strong>Password:</strong> Your SendGrid API key</p>
+                            <p><strong>Security:</strong> Enable STARTTLS for port 587, or TLS for port 465</p>
                         </div>
-                    </div>
-                    
-                    <!-- Gmail Configuration Guide -->
-                    <div id="gmail-guide" class="mt-4 p-4 rounded-lg hidden" style="background: #f0fdf4; border: 1px solid #86efac;">
-                        <h5 class="font-semibold mb-2 text-sm" style="color: #166534;">
-                            <i class="fas fa-info-circle mr-2"></i>Gmail Configuration Guide
-                        </h5>
-                        <div class="text-xs space-y-1" style="color: #15803d;">
-                            <p><strong>Host:</strong> smtp.gmail.com</p>
-                            <p><strong>Port:</strong> 587 (STARTTLS) or 465 (TLS)</p>
-                            <p><strong>Username:</strong> your-email@gmail.com</p>
-                            <p><strong>Password:</strong> App Password (not regular password)</p>
-                            <p><strong>Security:</strong> Enable STARTTLS for port 587, TLS for port 465</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Outlook Configuration Guide -->
-                    <div id="outlook-guide" class="mt-4 p-4 rounded-lg hidden" style="background: #faf5ff; border: 1px solid #c4b5fd;">
-                        <h5 class="font-semibold mb-2 text-sm" style="color: #7c3aed;">
-                            <i class="fas fa-info-circle mr-2"></i>Outlook Configuration Guide
-                        </h5>
-                        <div class="text-xs space-y-1" style="color: #7c2d12;">
-                            <p><strong>Host:</strong> smtp-mail.outlook.com</p>
-                            <p><strong>Port:</strong> 587 (STARTTLS)</p>
-                            <p><strong>Username:</strong> your-email@outlook.com</p>
-                            <p><strong>Password:</strong> Your account password</p>
-                            <p><strong>Security:</strong> Enable STARTTLS</p>
+                        <div class="mt-3 p-3 rounded" style="background: var(--orange-50);">
+                            <p class="text-xs font-medium" style="color: var(--orange-700);">
+                                🔑 <strong>Username:</strong> Always use "apikey" as the username with SendGrid.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -386,6 +430,9 @@
     </div>
 </div>
 
+<!-- Toast Notifications -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
 <script>
 let currentProfileId = null;
 let isEditMode = false;
@@ -403,20 +450,40 @@ function editSMTP(profileId) {
     isEditMode = true;
     currentProfileId = profileId;
     
-    // Get profile data from the DOM (you might want to fetch this via API)
-    const profileCard = document.querySelector(`[onclick="editSMTP(${profileId})"]`).closest('.bg-white');
-    const profileName = profileCard.querySelector('h3').textContent;
-    const profileHost = profileCard.querySelector('p').textContent.split(':')[0];
-    const profilePort = profileCard.querySelector('p').textContent.split(':')[1];
-    
-    document.getElementById('modal-title').textContent = 'Edit SMTP Profile';
-    document.getElementById('smtp-form').action = `/smtp/${profileId}/edit`;
-    document.getElementById('profile-name').value = profileName;
-    document.getElementById('profile-host').value = profileHost;
-    document.getElementById('profile-port').value = profilePort;
-    
-    // You'll need to populate other fields via API call
-    document.getElementById('smtp-modal').style.display = 'block';
+    // Fetch profile data via API for accurate editing
+    fetch(`/api/smtp/${profileId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const profile = data.profile;
+                
+                document.getElementById('modal-title').textContent = 'Edit SMTP Profile';
+                document.getElementById('smtp-form').action = `/smtp/${profileId}/edit`;
+                document.getElementById('profile-id').value = profileId;
+                document.getElementById('profile-name').value = profile.name;
+                document.getElementById('profile-host').value = profile.host;
+                document.getElementById('profile-port').value = profile.port;
+                document.getElementById('profile-username').value = profile.username;
+                document.getElementById('profile-from-email').value = profile.from_email;
+                document.getElementById('profile-from-name').value = profile.from_name || '';
+                document.getElementById('profile-use-tls').checked = profile.use_tls;
+                document.getElementById('profile-use-starttls').checked = profile.use_starttls;
+                document.getElementById('profile-active').checked = profile.active;
+                
+                // Show configuration guide for the host
+                showConfigurationGuide(profile.host);
+                
+                // Clear password field for security
+                document.getElementById('profile-password').value = '';
+                
+                document.getElementById('smtp-modal').style.display = 'block';
+            } else {
+                showToast('Error loading profile: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Error loading profile: ' + error.message, 'error');
+        });
 }
 
 function closeModal() {
@@ -609,23 +676,166 @@ function testSMTP(profileId) {
 }
 
 function showConfigurationGuide(host) {
-    const sendgridGuide = document.getElementById('sendgrid-guide');
+    const elasticemailGuide = document.getElementById('elasticemail-guide');
     const gmailGuide = document.getElementById('gmail-guide');
     const outlookGuide = document.getElementById('outlook-guide');
+    const sendgridGuide = document.getElementById('sendgrid-guide');
 
     // Hide all guides first
-    sendgridGuide.classList.add('hidden');
+    elasticemailGuide.classList.add('hidden');
     gmailGuide.classList.add('hidden');
     outlookGuide.classList.add('hidden');
+    sendgridGuide.classList.add('hidden');
 
     // Show relevant guide based on host
-    if (host && host.toLowerCase().includes('sendgrid.net')) {
-        sendgridGuide.classList.remove('hidden');
+    if (host && host.toLowerCase().includes('elasticemail.com')) {
+        elasticemailGuide.classList.remove('hidden');
+        // Auto-configure for ElasticEmail
+        autoConfigureElasticEmail();
     } else if (host && host.toLowerCase().includes('gmail.com')) {
         gmailGuide.classList.remove('hidden');
+        // Auto-configure for Gmail
+        autoConfigureGmail();
     } else if (host && host.toLowerCase().includes('outlook.com')) {
         outlookGuide.classList.remove('hidden');
+        // Auto-configure for Outlook
+        autoConfigureOutlook();
+    } else if (host && host.toLowerCase().includes('sendgrid.net')) {
+        sendgridGuide.classList.remove('hidden');
+        // Auto-configure for SendGrid
+        autoConfigureSendGrid();
     }
+}
+
+function autoConfigureElasticEmail() {
+    // Set recommended settings for ElasticEmail
+    document.getElementById('profile-port').value = '587';
+    document.getElementById('profile-use-tls').checked = false;
+    document.getElementById('profile-use-starttls').checked = true;
+    
+    // Show helpful message
+    showToast('Auto-configured for ElasticEmail: Port 587 with STARTTLS (recommended)', 'info');
+}
+
+function autoConfigureGmail() {
+    // Set recommended settings for Gmail
+    document.getElementById('profile-port').value = '587';
+    document.getElementById('profile-use-tls').checked = false;
+    document.getElementById('profile-use-starttls').checked = true;
+    
+    // Show helpful message
+    showToast('Auto-configured for Gmail: Port 587 with STARTTLS', 'info');
+}
+
+function autoConfigureOutlook() {
+    // Set recommended settings for Outlook
+    document.getElementById('profile-port').value = '587';
+    document.getElementById('profile-use-tls').checked = false;
+    document.getElementById('profile-use-starttls').checked = true;
+    
+    // Show helpful message
+    showToast('Auto-configured for Outlook: Port 587 with STARTTLS', 'info');
+}
+
+function autoConfigureSendGrid() {
+    // Set recommended settings for SendGrid
+    document.getElementById('profile-port').value = '587';
+    document.getElementById('profile-use-tls').checked = false;
+    document.getElementById('profile-use-starttls').checked = true;
+    
+    // Show helpful message
+    showToast('Auto-configured for SendGrid: Port 587 with STARTTLS', 'info');
+}
+
+function validateSMTPForm() {
+    const host = document.getElementById('profile-host').value.trim();
+    const port = parseInt(document.getElementById('profile-port').value);
+    const username = document.getElementById('profile-username').value.trim();
+    const password = document.getElementById('profile-password').value;
+    const fromEmail = document.getElementById('profile-from-email').value.trim();
+    const useTls = document.getElementById('profile-use-tls').checked;
+    const useStarttls = document.getElementById('profile-use-starttls').checked;
+    
+    // Basic validation
+    if (!host) {
+        showToast('SMTP host is required', 'error');
+        return false;
+    }
+    
+    if (!username) {
+        showToast('Username is required', 'error');
+        return false;
+    }
+    
+    if (!isEditMode && !password) {
+        showToast('Password/API key is required for new profiles', 'error');
+        return false;
+    }
+    
+    if (!fromEmail) {
+        showToast('From email is required', 'error');
+        return false;
+    }
+    
+    // Port validation
+    if (port < 1 || port > 65535) {
+        showToast('Port must be between 1 and 65535', 'error');
+        return false;
+    }
+    
+    // Security validation
+    if (port === 465 && !useTls) {
+        showToast('Port 465 requires TLS to be enabled', 'error');
+        return false;
+    }
+    
+    if (port === 587 && !useStarttls) {
+        showToast('Port 587 requires STARTTLS to be enabled', 'error');
+        return false;
+    }
+    
+    // ElasticEmail specific validation
+    if (host.toLowerCase().includes('elasticemail.com')) {
+        if (port !== 587 && port !== 465) {
+            showToast('ElasticEmail supports ports 587 (STARTTLS) or 465 (TLS)', 'error');
+            return false;
+        }
+        
+        if (port === 587 && !useStarttls) {
+            showToast('Port 587 with ElasticEmail requires STARTTLS', 'error');
+            return false;
+        }
+        
+        if (port === 465 && !useTls) {
+            showToast('Port 465 with ElasticEmail requires TLS', 'error');
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+function submitSMTPForm() {
+    if (!validateSMTPForm()) {
+        return false;
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('#smtp-form button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+    submitBtn.disabled = true;
+    
+    // Submit form
+    document.getElementById('smtp-form').submit();
+    
+    // Reset button after a delay
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }, 3000);
+    
+    return true;
 }
 
 // Close modals when clicking outside
@@ -633,6 +843,68 @@ window.onclick = function(event) {
     if (event.target.classList.contains('fixed')) {
         event.target.style.display = 'none';
     }
+}
+
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toast-container');
+    
+    const toast = document.createElement('div');
+    toast.className = `p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+    
+    let bgColor, textColor, icon;
+    
+    switch (type) {
+        case 'success':
+            bgColor = 'bg-green-500';
+            textColor = 'text-white';
+            icon = 'fas fa-check-circle';
+            break;
+        case 'error':
+            bgColor = 'bg-red-500';
+            textColor = 'text-white';
+            icon = 'fas fa-exclamation-circle';
+            break;
+        case 'warning':
+            bgColor = 'bg-yellow-500';
+            textColor = 'text-white';
+            icon = 'fas fa-exclamation-triangle';
+            break;
+        case 'info':
+        default:
+            bgColor = 'bg-blue-500';
+            textColor = 'text-white';
+            icon = 'fas fa-info-circle';
+            break;
+    }
+    
+    toast.innerHTML = `
+        <div class="flex items-center space-x-3 ${bgColor} ${textColor} p-3 rounded-lg">
+            <i class="${icon}"></i>
+            <span class="text-sm font-medium">${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 300);
+        }
+    }, 5000);
 }
 </script>
 {% endblock %}

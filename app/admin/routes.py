@@ -203,6 +203,35 @@ async def smtp_delete(row_id: int, session: AsyncSession = Depends(get_session),
     return RedirectResponse("/smtp", status_code=status.HTTP_302_FOUND)
 
 
+@router.get("/api/smtp/{profile_id}")
+async def get_smtp_profile(profile_id: int, session: AsyncSession = Depends(get_session), admin=Depends(require_admin)):
+    """Get SMTP profile details for editing"""
+    try:
+        smtp_profile = await session.get(SmtpProfile, profile_id)
+        if not smtp_profile:
+            raise HTTPException(status_code=404, detail="SMTP profile not found")
+        
+        return JSONResponse({
+            "success": True,
+            "profile": {
+                "id": smtp_profile.id,
+                "name": smtp_profile.name,
+                "host": smtp_profile.host,
+                "port": smtp_profile.port,
+                "username": smtp_profile.username,
+                "use_tls": smtp_profile.use_tls,
+                "use_starttls": smtp_profile.use_starttls,
+                "from_name": smtp_profile.from_name,
+                "from_email": smtp_profile.from_email,
+                "active": smtp_profile.active,
+                "created_at": smtp_profile.created_at.isoformat() if smtp_profile.created_at else None
+            }
+        })
+        
+    except Exception as e:
+        return JSONResponse({"success": False, "error": f"Error retrieving profile: {str(e)}"}, status_code=500)
+
+
 @router.post("/api/smtp/test")
 async def smtp_test(request: Request, session: AsyncSession = Depends(get_session), admin=Depends(require_admin)):
     try:
