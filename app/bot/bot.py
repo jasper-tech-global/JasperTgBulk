@@ -125,48 +125,50 @@ async def handle_random_template_command(message: Message, session: AsyncSession
     await message.answer(f"🎲 Starting random template campaign!\n📧 Templates: {', '.join(template_codes)}\n📬 Recipients: {len(actual_recipients)}")
     
     try:
-        # Progress tracking callback
-        progress_messages = []
-        
-        def progress_callback(progress_data):
+        # Progress tracking callback for real-time updates
+        async def progress_callback(progress_data):
             status = progress_data.get("status")
             message_text = progress_data.get("message", "")
             
             if status == "starting":
-                progress_messages.append(f"🚀 {message_text}")
+                await message.answer(f"🚀 {message_text}")
             elif status == "sending":
-                progress_messages.append(f"📧 {message_text}")
+                await message.answer(f"📧 {message_text}")
             elif status == "sent":
-                progress_messages.append(f"✅ {message_text}")
+                await message.answer(f"✅ {message_text}")
             elif status == "failed":
-                progress_messages.append(f"❌ {message_text}")
+                await message.answer(f"❌ {message_text}")
             elif status == "waiting":
-                progress_messages.append(f"⏳ {message_text}")
+                await message.answer(f"⏳ {message_text}")
             elif status == "completed":
-                progress_messages.append(f"🎉 {message_text}")
+                # Build completion message
+                completion_message = f"🎉 {message_text}\n\n"
                 
                 # Add timing summary for 10+ emails
                 if progress_data.get("total", 0) >= 10:
                     timing = progress_data.get("timing_summary", {})
-                    progress_messages.append(f"⏱️ **Timing Summary:**")
-                    progress_messages.append(f"   • Total Duration: {timing.get('total_duration', 'N/A')}")
-                    progress_messages.append(f"   • Average per Email: {timing.get('average_time_per_email', 'N/A')}")
-                    progress_messages.append(f"   • Total Breaktime: {timing.get('total_breaktime', 'N/A')}")
-                    progress_messages.append(f"   • Breaktime Range: {timing.get('breaktime_range', 'N/A')}")
+                    completion_message += f"⏱️ **Timing Summary:**\n"
+                    completion_message += f"   • Total Duration: {timing.get('total_duration', 'N/A')}\n"
+                    completion_message += f"   • Average per Email: {timing.get('average_time_per_email', 'N/A')}\n"
+                    completion_message += f"   • Total Breaktime: {timing.get('total_breaktime', 'N/A')}\n"
+                    completion_message += f"   • Breaktime Range: {timing.get('breaktime_range', 'N/A')}\n\n"
                 
                 # Add template usage summary
                 template_summary = progress_data.get("template_summary", {})
                 if template_summary:
-                    progress_messages.append(f"📋 **Template Usage:**")
+                    completion_message += f"📋 **Template Usage:**\n"
                     for template_code, count in template_summary.items():
-                        progress_messages.append(f"   • {template_code}: {count} emails")
+                        completion_message += f"   • {template_code}: {count} emails\n"
+                    completion_message += "\n"
                 
                 # Add SMTP usage summary
                 smtp_summary = progress_data.get("smtp_summary", {})
                 if smtp_summary:
-                    progress_messages.append(f"📤 **SMTP Usage:**")
+                    completion_message += f"📤 **SMTP Usage:**\n"
                     for smtp_name, count in smtp_summary.items():
-                        progress_messages.append(f"   • {smtp_name}: {count} emails")
+                        completion_message += f"   • {smtp_name}: {count} emails\n"
+                
+                await message.answer(completion_message)
         
         # Send bulk emails with random templates
         from app.services.email_sender import send_bulk_emails_with_random_templates
@@ -183,10 +185,12 @@ async def handle_random_template_command(message: Message, session: AsyncSession
             use_content_variation=True
         )
         
-        # Send final summary
-        final_message = "\n".join(progress_messages[-10:])  # Last 10 messages
-        await message.answer(final_message)
-        
+        # Final confirmation
+        if result["successful_sends"] > 0:
+            await message.answer(f"🎯 Campaign completed successfully! {result['successful_sends']} emails sent with anti-spam optimization.")
+        else:
+            await message.answer(f"❌ Campaign failed. No emails were sent successfully.")
+            
     except Exception as exc:
         await message.answer(f"❌ Random template campaign failed: {str(exc)}")
 
@@ -200,41 +204,42 @@ async def handle_enhanced_bulk_sending(message: Message, session: AsyncSession, 
         subject = render_template_string(template.subject_template, variables)
         body = render_template_string(template.body_template, variables)
         
-        # Progress tracking callback
-        progress_messages = []
-        
-        def progress_callback(progress_data):
+        # Progress tracking callback for real-time updates
+        async def progress_callback(progress_data):
             status = progress_data.get("status")
             message_text = progress_data.get("message", "")
             
             if status == "starting":
-                progress_messages.append(f"🚀 {message_text}")
+                await message.answer(f"🚀 {message_text}")
             elif status == "sending":
-                progress_messages.append(f"📧 {message_text}")
+                await message.answer(f"📧 {message_text}")
             elif status == "sent":
-                progress_messages.append(f"✅ {message_text}")
+                await message.answer(f"✅ {message_text}")
             elif status == "failed":
-                progress_messages.append(f"❌ {message_text}")
+                await message.answer(f"❌ {message_text}")
             elif status == "waiting":
-                progress_messages.append(f"⏳ {message_text}")
+                await message.answer(f"⏳ {message_text}")
             elif status == "completed":
-                progress_messages.append(f"🎉 {message_text}")
+                # Build completion message
+                completion_message = f"🎉 {message_text}\n\n"
                 
                 # Add timing summary for 10+ emails
                 if progress_data.get("total", 0) >= 10:
                     timing = progress_data.get("timing_summary", {})
-                    progress_messages.append(f"⏱️ **Timing Summary:**")
-                    progress_messages.append(f"   • Total Duration: {timing.get('total_duration', 'N/A')}")
-                    progress_messages.append(f"   • Average per Email: {timing.get('average_time_per_email', 'N/A')}")
-                    progress_messages.append(f"   • Total Breaktime: {timing.get('total_breaktime', 'N/A')}")
-                    progress_messages.append(f"   • Breaktime Range: {timing.get('breaktime_range', 'N/A')}")
+                    completion_message += f"⏱️ **Timing Summary:**\n"
+                    completion_message += f"   • Total Duration: {timing.get('total_duration', 'N/A')}\n"
+                    completion_message += f"   • Average per Email: {timing.get('average_time_per_email', 'N/A')}\n"
+                    completion_message += f"   • Total Breaktime: {timing.get('total_breaktime', 'N/A')}\n"
+                    completion_message += f"   • Breaktime Range: {timing.get('breaktime_range', 'N/A')}\n\n"
                 
                 # Add SMTP usage summary
                 smtp_summary = progress_data.get("smtp_usage", {})
                 if smtp_summary:
-                    progress_messages.append(f"📤 **SMTP Usage:**")
+                    completion_message += f"📤 **SMTP Usage:**\n"
                     for smtp_name, count in smtp_summary.items():
-                        progress_messages.append(f"   • {smtp_name}: {count} emails")
+                        completion_message += f"   • {smtp_name}: {count} emails\n"
+                
+                await message.answer(completion_message)
         
         # Send bulk emails with breaktime
         from app.services.email_sender import send_bulk_emails_with_breaktime
@@ -251,9 +256,11 @@ async def handle_enhanced_bulk_sending(message: Message, session: AsyncSession, 
             use_content_variation=True
         )
         
-        # Send final summary
-        final_message = "\n".join(progress_messages[-10:])  # Last 10 messages
-        await message.answer(final_message)
+        # Final confirmation
+        if result["successful_sends"] > 0:
+            await message.answer(f"🎯 Campaign completed successfully! {result['successful_sends']} emails sent with anti-spam optimization.")
+        else:
+            await message.answer(f"❌ Campaign failed. No emails were sent successfully.")
         
     except Exception as exc:
         await message.answer(f"❌ Enhanced bulk send failed: {str(exc)}")
