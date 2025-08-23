@@ -709,7 +709,7 @@ async def send_bulk_emails_with_breaktime(
     }
     
     if progress_callback:
-        progress_callback({
+        await progress_callback({
             "status": "starting",
             "message": f"🚀 Starting bulk email campaign to {len(recipients)} recipients",
             "progress": 0,
@@ -741,7 +741,7 @@ async def send_bulk_emails_with_breaktime(
         
         # Progress update for sending
         if progress_callback:
-            progress_callback({
+            await progress_callback({
                 "status": "sending",
                 "message": f"📧 Sending email {index + 1} of {len(recipients)}",
                 "progress": progress_percentage,
@@ -793,7 +793,7 @@ async def send_bulk_emails_with_breaktime(
             
             # Progress update for successful send
             if progress_callback:
-                progress_callback({
+                await progress_callback({
                     "status": "sent",
                     "message": f"✅ Email sent to {recipient} - {remaining} remaining",
                     "progress": progress_percentage,
@@ -818,7 +818,7 @@ async def send_bulk_emails_with_breaktime(
             
             # Progress update for failed send
             if progress_callback:
-                progress_callback({
+                await progress_callback({
                     "status": "failed",
                     "message": f"❌ Failed to send to {recipient}: {str(exc)} - {remaining} remaining",
                     "progress": progress_percentage,
@@ -838,7 +838,7 @@ async def send_bulk_emails_with_breaktime(
             results["timing"]["breaktime_used"]["total_breaktime"] += breaktime
             
             if progress_callback:
-                progress_callback({
+                await progress_callback({
                     "status": "waiting",
                     "message": f"⏳ Breaktime: {breaktime:.1f}s before next email...",
                     "progress": progress_percentage,
@@ -865,7 +865,7 @@ async def send_bulk_emails_with_breaktime(
     
     # Final progress update
     if progress_callback:
-        progress_callback({
+        await progress_callback({
             "status": "completed",
             "message": f"🎉 All emails completed! {results['successful_sends']} successful, {results['failed_sends']} failed",
             "progress": 100,
@@ -955,7 +955,7 @@ async def send_bulk_emails_with_random_templates(
     }
     
     if progress_callback:
-        progress_callback({
+        await progress_callback({
             "status": "starting",
             "message": f"🎲 Starting random template campaign to {len(recipients)} recipients using {len(templates)} templates",
             "progress": 0,
@@ -996,7 +996,7 @@ async def send_bulk_emails_with_random_templates(
         
         # Progress update for sending
         if progress_callback:
-            progress_callback({
+            await progress_callback({
                 "status": "sending",
                 "message": f"📧 Sending {selected_template_code} template to {recipient} ({index + 1}/{len(recipients)})",
                 "progress": (index / len(recipients)) * 100,
@@ -1051,7 +1051,7 @@ async def send_bulk_emails_with_random_templates(
             
             # Progress update for successful send
             if progress_callback:
-                progress_callback({
+                await progress_callback({
                     "status": "sent",
                     "message": f"✅ {selected_template_code} sent to {recipient} - {len(recipients) - index - 1} remaining",
                     "progress": ((index + 1) / len(recipients)) * 100,
@@ -1076,7 +1076,7 @@ async def send_bulk_emails_with_random_templates(
             
             # Progress update for failed send
             if progress_callback:
-                progress_callback({
+                await progress_callback({
                     "status": "failed",
                     "message": f"❌ Failed to send {selected_template_code} to {recipient}: {str(exc)} - {len(recipients) - index - 1} remaining",
                     "progress": ((index + 1) / len(recipients)) * 100,
@@ -1095,7 +1095,7 @@ async def send_bulk_emails_with_random_templates(
             results["timing"]["breaktime_used"]["total_breaktime"] += breaktime
             
             if progress_callback:
-                progress_callback({
+                await progress_callback({
                     "status": "waiting",
                     "message": f"⏳ Breaktime: {breaktime:.1f}s before next email...",
                     "progress": ((index + 1) / len(recipients)) * 100,
@@ -1121,7 +1121,7 @@ async def send_bulk_emails_with_random_templates(
     
     # Final progress update
     if progress_callback:
-        progress_callback({
+        await progress_callback({
             "status": "completed",
             "message": f"🎉 Random template campaign completed! {results['successful_sends']} successful, {results['failed_sends']} failed",
             "progress": 100,
