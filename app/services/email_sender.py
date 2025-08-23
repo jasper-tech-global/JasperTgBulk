@@ -3,6 +3,7 @@ from email.message import EmailMessage
 from email.utils import formataddr, formatdate, make_msgid
 from aiosmtplib import SMTP, SMTPException
 from typing import Optional
+from sqlalchemy import select
 import socket
 import ssl
 import time
@@ -355,7 +356,6 @@ async def get_random_smtp_profile(session) -> dict:
         from app.models.smtp_profile import SmtpProfile
         from app.core.security import SecretBox
         from app.core.config import settings
-        from sqlalchemy import select
         
         # Get all SMTP profiles
         stmt = select(SmtpProfile).where(SmtpProfile.active == True)
