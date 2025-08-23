@@ -243,6 +243,106 @@ class AntiSpamOptimizer:
         message["X-ElasticEmail-DKIM"] = f"pass header.d={domain}"
         message["X-ElasticEmail-DMARC"] = "pass"
 
+    @staticmethod
+    def add_enhanced_anti_spam_headers(message: EmailMessage, from_email: str) -> None:
+        """Add enhanced anti-spam headers to prevent detection"""
+        
+        domain = from_email.split('@')[1]
+        timestamp = int(time.time())
+        
+        # Enhanced anti-spam headers
+        message["X-Email-Category"] = "transactional"
+        message["X-Email-Purpose"] = "individual"
+        message["X-Sending-Context"] = "user-requested"
+        message["X-Email-Frequency"] = "on-demand"
+        
+        # Randomize headers to avoid pattern detection
+        random_headers = [
+            ("X-Email-ID", f"msg_{timestamp}_{random.randint(1000, 9999)}"),
+            ("X-Processing-Time", f"{random.randint(10, 50)}ms"),
+            ("X-Queue-Position", f"{random.randint(1, 100)}"),
+            ("X-Delivery-Attempt", "1"),
+            ("X-Email-Priority", random.choice(["normal", "low", "medium"])),
+            ("X-Content-Length", str(random.randint(500, 2000))),
+            ("X-Email-Source", "user-interface"),
+            ("X-Email-Trigger", "manual"),
+            ("X-Email-Session", f"sess_{random.randint(10000, 99999)}"),
+            ("X-Email-Client", "telegram-bot")
+        ]
+        
+        # Add random subset of headers
+        selected_headers = random.sample(random_headers, random.randint(3, 6))
+        for header_name, header_value in selected_headers:
+            message[header_name] = header_value
+        
+        # Add domain-specific anti-spam headers
+        message["X-Domain-Sending-Context"] = "individual-user"
+        message["X-Domain-Email-Type"] = "personal"
+        message["X-Domain-Sending-Method"] = "on-demand"
+        message["X-Domain-User-Requested"] = "true"
+
+    @staticmethod
+    def add_content_variation(html_body: str, from_email: str) -> str:
+        """Add slight content variations to avoid pattern detection"""
+        
+        import re
+        
+        # Add random spacing variations
+        spacing_variations = [
+            ("<p>", "<p style='margin-bottom: 1rem;'>"),
+            ("<p>", "<p style='margin-bottom: 1.2rem;'>"),
+            ("<p>", "<p style='margin-bottom: 0.8rem;'>"),
+            ("<h1>", "<h1 style='margin-bottom: 1.5rem;'>"),
+            ("<h1>", "<h1 style='margin-bottom: 1.8rem;'>"),
+            ("<h2>", "<h2 style='margin-bottom: 1.2rem;'>"),
+            ("<h2>", "<h2 style='margin-bottom: 1.4rem;'>"),
+        ]
+        
+        # Apply random spacing variations
+        for old_tag, new_tag in random.sample(spacing_variations, random.randint(1, 3)):
+            if old_tag in html_body:
+                html_body = html_body.replace(old_tag, new_tag, 1)
+        
+        # Add random invisible characters to avoid exact content matching
+        invisible_chars = ["&#8203;", "&#8204;", "&#8205;"]  # Zero-width characters
+        if random.choice([True, False]):
+            # Insert at random positions
+            positions = [m.start() for m in re.finditer(r'</p>|</div>|</h[1-6]>', html_body)]
+            if positions:
+                pos = random.choice(positions)
+                char = random.choice(invisible_chars)
+                html_body = html_body[:pos] + char + html_body[pos:]
+        
+        # Add random comment to avoid exact matching
+        if random.choice([True, False]):
+            comments = [
+                f"<!-- Email generated at {timestamp} -->",
+                f"<!-- User requested email -->",
+                f"<!-- Individual message -->",
+                f"<!-- Personalized content -->"
+            ]
+            comment = random.choice(comments)
+            html_body = html_body.replace("</body>", f"{comment}\n</body>")
+        
+        return html_body
+
+    @staticmethod
+    def add_smtp_rotation_headers(message: EmailMessage, smtp_profile: dict) -> None:
+        """Add headers to help with SMTP rotation and load balancing"""
+        
+        # Add SMTP profile information
+        message["X-SMTP-Profile"] = smtp_profile.get("name", "unknown")
+        message["X-SMTP-Host"] = smtp_profile.get("host", "unknown")
+        message["X-SMTP-Port"] = str(smtp_profile.get("port", "unknown"))
+        
+        # Add rotation indicators
+        message["X-SMTP-Rotation"] = "enabled"
+        message["X-SMTP-Load-Balancing"] = "random"
+        message["X-SMTP-Selection"] = "auto"
+        
+        # Add timestamp for rotation tracking
+        message["X-SMTP-Timestamp"] = str(int(time.time()))
+
 
 async def get_random_smtp_profile(session) -> dict:
     """
@@ -328,6 +428,7 @@ async def send_email_smtp(
     subject: str,
     html_body: str,
     timeout: Optional[float] = 30.0,
+    smtp_profile: Optional[dict] = None, # Added for enhanced headers
 ) -> None:
     """
     Send email with advanced anti-spam optimization and proper SSL/TLS handling
@@ -359,8 +460,15 @@ async def send_email_smtp(
     AntiSpamOptimizer.add_rate_limiting_headers(message, from_email)
     AntiSpamOptimizer.add_security_headers(message)
     
+    # Add enhanced anti-spam headers
+    AntiSpamOptimizer.add_enhanced_anti_spam_headers(message, from_email)
+    
+    # Add SMTP rotation headers if profile is provided
+    if smtp_profile:
+        AntiSpamOptimizer.add_smtp_rotation_headers(message, smtp_profile)
+    
     # Add ElasticEmail-specific headers if using ElasticEmail
-    if "elasticemail.com" in host.lower():
+    if smtp_profile and "elasticemail.com" in host.lower():
         AntiSpamOptimizer.add_elasticemail_headers(message, from_email)
     
     # Set recipients and subject
@@ -536,6 +644,504 @@ async def send_bulk_emails_with_random_smtp(
                 "recipient": recipient,
                 "error": str(exc)
             })
+    
+    return results
+
+
+async def send_bulk_emails_with_breaktime(
+    session,
+    recipients: list,
+    subject_template: str,
+    body_template: str,
+    min_breaktime: float = 6.0,
+    max_breaktime: float = 15.0,
+    timeout: Optional[float] = 30.0,
+    progress_callback=None,
+    use_content_variation: bool = True,
+) -> dict:
+    """
+    Send bulk emails with configurable breaktime intervals to avoid spam detection
+    
+    This function sends emails to multiple recipients with random breaktime intervals
+    between each email, providing real-time progress updates and estimated completion time.
+    
+    Args:
+        session: Database session
+        recipients: List of recipient email addresses
+        subject_template: Email subject template
+        body_template: Email body template
+        min_breaktime: Minimum breaktime between emails in seconds (default: 6)
+        max_breaktime: Maximum breaktime between emails in seconds (default: 15)
+        timeout: SMTP timeout
+        progress_callback: Optional callback function for progress updates
+        use_content_variation: Whether to add content variations to avoid detection
+    
+    Returns:
+        dict with bulk sending results and timing information
+    """
+    
+    import asyncio
+    from datetime import datetime, timedelta
+    
+    start_time = datetime.now()
+    results = {
+        "total_recipients": len(recipients),
+        "successful_sends": 0,
+        "failed_sends": 0,
+        "errors": [],
+        "smtp_usage": {},
+        "timing": {
+            "start_time": start_time.isoformat(),
+            "end_time": None,
+            "total_duration": None,
+            "average_time_per_email": None,
+            "breaktime_used": {
+                "min": min_breaktime,
+                "max": max_breaktime,
+                "total_breaktime": 0
+            }
+        }
+    }
+    
+    if progress_callback:
+        progress_callback({
+            "status": "starting",
+            "message": f"🚀 Starting bulk email campaign to {len(recipients)} recipients",
+            "progress": 0,
+            "total": len(recipients),
+            "completed": 0,
+            "remaining": len(recipients),
+            "current_recipient": None,
+            "estimated_completion": None,
+            "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+        })
+    
+    for index, recipient in enumerate(recipients):
+        current_time = datetime.now()
+        elapsed_time = (current_time - start_time).total_seconds()
+        
+        # Calculate progress and estimated completion
+        progress_percentage = (index / len(recipients)) * 100
+        completed = index
+        remaining = len(recipients) - index
+        
+        # Estimate completion time based on current pace
+        if index > 0:
+            avg_time_per_email = elapsed_time / index
+            estimated_remaining_time = avg_time_per_email * remaining
+            estimated_completion = current_time + timedelta(seconds=estimated_remaining_time)
+        else:
+            estimated_completion = None
+            estimated_remaining_time = None
+        
+        # Progress update for sending
+        if progress_callback:
+            progress_callback({
+                "status": "sending",
+                "message": f"📧 Sending email {index + 1} of {len(recipients)}",
+                "progress": progress_percentage,
+                "total": len(recipients),
+                "completed": completed,
+                "remaining": remaining,
+                "current_recipient": recipient,
+                "estimated_completion": estimated_completion.isoformat() if estimated_completion else None,
+                "elapsed_time": elapsed_time,
+                "estimated_remaining_time": estimated_remaining_time,
+                "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+            })
+        
+        try:
+            # Get random SMTP profile
+            smtp_profile = await get_random_smtp_profile(session)
+            if not smtp_profile:
+                raise EmailSendError("No active SMTP profiles available")
+            
+            # Apply content variation if enabled
+            current_body = body_template
+            if use_content_variation:
+                current_body = AntiSpamOptimizer.add_content_variation(body_template, smtp_profile["from_email"])
+            
+            # Send email using the selected profile
+            await send_email_smtp(
+                host=smtp_profile["host"],
+                port=smtp_profile["port"],
+                username=smtp_profile["username"],
+                password=smtp_profile["password"],
+                use_tls=smtp_profile["use_tls"],
+                use_starttls=smtp_profile["use_starttls"],
+                from_name=smtp_profile["from_name"] or "Jasper TG BULK",
+                from_email=smtp_profile["from_email"],
+                to_email=recipient,
+                subject=subject_template,
+                html_body=current_body,
+                timeout=timeout,
+                smtp_profile=smtp_profile  # Pass for enhanced headers
+            )
+            
+            results["successful_sends"] += 1
+            
+            # Track SMTP profile usage
+            smtp_name = smtp_profile["name"]
+            if smtp_name not in results["smtp_usage"]:
+                results["smtp_usage"][smtp_name] = 0
+            results["smtp_usage"][smtp_name] += 1
+            
+            # Progress update for successful send
+            if progress_callback:
+                progress_callback({
+                    "status": "sent",
+                    "message": f"✅ Email sent to {recipient} - {remaining} remaining",
+                    "progress": progress_percentage,
+                    "total": len(recipients),
+                    "completed": completed + 1,
+                    "remaining": remaining - 1,
+                    "current_recipient": recipient,
+                    "estimated_completion": estimated_completion.isoformat() if estimated_completion else None,
+                    "elapsed_time": elapsed_time,
+                    "estimated_remaining_time": estimated_remaining_time,
+                    "smtp_used": smtp_name,
+                    "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+                })
+                
+        except Exception as exc:
+            results["failed_sends"] += 1
+            results["errors"].append({
+                "recipient": recipient,
+                "error": str(exc),
+                "timestamp": current_time.isoformat()
+            })
+            
+            # Progress update for failed send
+            if progress_callback:
+                progress_callback({
+                    "status": "failed",
+                    "message": f"❌ Failed to send to {recipient}: {str(exc)} - {remaining} remaining",
+                    "progress": progress_percentage,
+                    "total": len(recipients),
+                    "completed": completed + 1,
+                    "remaining": remaining - 1,
+                    "current_recipient": recipient,
+                    "estimated_completion": estimated_completion.isoformat() if estimated_completion else None,
+                    "elapsed_time": elapsed_time,
+                    "estimated_remaining_time": estimated_remaining_time,
+                    "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+                })
+        
+        # Add breaktime between emails (except for the last one)
+        if index < len(recipients) - 1:
+            breaktime = random.uniform(min_breaktime, max_breaktime)
+            results["timing"]["breaktime_used"]["total_breaktime"] += breaktime
+            
+            if progress_callback:
+                progress_callback({
+                    "status": "waiting",
+                    "message": f"⏳ Breaktime: {breaktime:.1f}s before next email...",
+                    "progress": progress_percentage,
+                    "total": len(recipients),
+                    "completed": completed + 1,
+                    "remaining": remaining - 1,
+                    "current_recipient": None,
+                    "estimated_completion": estimated_completion.isoformat() if estimated_completion else None,
+                    "elapsed_time": elapsed_time,
+                    "estimated_remaining_time": estimated_remaining_time,
+                    "breaktime": breaktime,
+                    "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+                })
+            
+            await asyncio.sleep(breaktime)
+    
+    # Final results
+    end_time = datetime.now()
+    total_duration = (end_time - start_time).total_seconds()
+    
+    results["timing"]["end_time"] = end_time.isoformat()
+    results["timing"]["total_duration"] = total_duration
+    results["timing"]["average_time_per_email"] = total_duration / len(recipients) if len(recipients) > 0 else 0
+    
+    # Final progress update
+    if progress_callback:
+        progress_callback({
+            "status": "completed",
+            "message": f"🎉 All emails completed! {results['successful_sends']} successful, {results['failed_sends']} failed",
+            "progress": 100,
+            "total": len(recipients),
+            "completed": len(recipients),
+            "remaining": 0,
+            "current_recipient": None,
+            "estimated_completion": end_time.isoformat(),
+            "elapsed_time": total_duration,
+            "estimated_remaining_time": 0,
+            "final_results": results,
+            "timing_summary": {
+                "total_duration": f"{total_duration:.1f}s",
+                "average_time_per_email": f"{results['timing']['average_time_per_email']:.1f}s",
+                "total_breaktime": f"{results['timing']['breaktime_used']['total_breaktime']:.1f}s",
+                "breaktime_range": f"{min_breaktime}-{max_breaktime}s"
+            }
+        })
+    
+    return results
+
+
+async def send_bulk_emails_with_random_templates(
+    session,
+    recipients: list,
+    template_codes: list,
+    variables: dict,
+    min_breaktime: float = 6.0,
+    max_breaktime: float = 15.0,
+    timeout: Optional[float] = 30.0,
+    progress_callback=None,
+    use_content_variation: bool = True,
+) -> dict:
+    """
+    Send bulk emails using random templates for each recipient to avoid pattern detection
+    
+    This function randomly assigns different templates to each recipient, making it appear
+    like individual emails rather than a bulk campaign.
+    
+    Args:
+        session: Database session
+        recipients: List of recipient email addresses
+        template_codes: List of template codes to randomly choose from
+        variables: Variables to use in template rendering
+        min_breaktime: Minimum breaktime between emails in seconds
+        max_breaktime: Maximum breaktime between emails in seconds
+        timeout: SMTP timeout
+        progress_callback: Optional callback function for progress updates
+        use_content_variation: Whether to add content variations
+    
+    Returns:
+        dict with bulk sending results and timing information
+    """
+    
+    from jinja2 import Template as JinjaTemplate
+    
+    # Get all templates
+    stmt = select(Template).where(Template.code.in_(template_codes), Template.active == True)
+    result = await session.execute(stmt)
+    templates = result.scalars().all()
+    
+    if not templates:
+        raise EmailSendError("No active templates found from the provided template codes")
+    
+    # Create template mapping
+    template_map = {tmpl.code: tmpl for tmpl in templates}
+    
+    # Randomize template order for recipients
+    import random
+    random.shuffle(recipients)
+    
+    results = {
+        "total_recipients": len(recipients),
+        "successful_sends": 0,
+        "failed_sends": 0,
+        "errors": [],
+        "smtp_usage": {},
+        "template_usage": {},
+        "timing": {
+            "start_time": None,
+            "end_time": None,
+            "total_duration": None,
+            "average_time_per_email": None,
+            "breaktime_used": {
+                "min": min_breaktime,
+                "max": max_breaktime,
+                "total_breaktime": 0
+            }
+        }
+    }
+    
+    if progress_callback:
+        progress_callback({
+            "status": "starting",
+            "message": f"🎲 Starting random template campaign to {len(recipients)} recipients using {len(templates)} templates",
+            "progress": 0,
+            "total": len(recipients),
+            "completed": 0,
+            "remaining": len(recipients),
+            "current_recipient": None,
+            "templates_available": list(template_map.keys()),
+            "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+        })
+    
+    from datetime import datetime
+    start_time = datetime.now()
+    results["timing"]["start_time"] = start_time.isoformat()
+    
+    for index, recipient in enumerate(recipients):
+        current_time = datetime.now()
+        elapsed_time = (current_time - start_time).total_seconds()
+        
+        # Randomly select template for this recipient
+        selected_template_code = random.choice(template_codes)
+        selected_template = template_map.get(selected_template_code)
+        
+        if not selected_template:
+            continue
+        
+        # Render template
+        try:
+            subject = JinjaTemplate(selected_template.subject_template).render(**variables)
+            body = JinjaTemplate(selected_template.body_template).render(**variables)
+        except Exception as exc:
+            results["errors"].append({
+                "recipient": recipient,
+                "error": f"Template rendering failed: {str(exc)}",
+                "template": selected_template_code,
+                "timestamp": current_time.isoformat()
+            })
+            continue
+        
+        # Progress update for sending
+        if progress_callback:
+            progress_callback({
+                "status": "sending",
+                "message": f"📧 Sending {selected_template_code} template to {recipient} ({index + 1}/{len(recipients)})",
+                "progress": (index / len(recipients)) * 100,
+                "total": len(recipients),
+                "completed": index,
+                "remaining": len(recipients) - index,
+                "current_recipient": recipient,
+                "selected_template": selected_template_code,
+                "elapsed_time": elapsed_time,
+                "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+            })
+        
+        try:
+            # Get random SMTP profile
+            smtp_profile = await get_random_smtp_profile(session)
+            if not smtp_profile:
+                raise EmailSendError("No active SMTP profiles available")
+            
+            # Apply content variation if enabled
+            current_body = body
+            if use_content_variation:
+                current_body = AntiSpamOptimizer.add_content_variation(body, smtp_profile["from_email"])
+            
+            # Send email
+            await send_email_smtp(
+                host=smtp_profile["host"],
+                port=smtp_profile["port"],
+                username=smtp_profile["username"],
+                password=smtp_profile["password"],
+                use_tls=smtp_profile["use_tls"],
+                use_starttls=smtp_profile["use_starttls"],
+                from_name=smtp_profile["from_name"] or "Jasper TG BULK",
+                from_email=smtp_profile["from_email"],
+                to_email=recipient,
+                subject=subject,
+                html_body=current_body,
+                timeout=timeout,
+                smtp_profile=smtp_profile
+            )
+            
+            results["successful_sends"] += 1
+            
+            # Track usage
+            smtp_name = smtp_profile["name"]
+            if smtp_name not in results["smtp_usage"]:
+                results["smtp_usage"][smtp_name] = 0
+            results["smtp_usage"][smtp_name] += 1
+            
+            if selected_template_code not in results["template_usage"]:
+                results["template_usage"][selected_template_code] = 0
+            results["template_usage"][selected_template_code] += 1
+            
+            # Progress update for successful send
+            if progress_callback:
+                progress_callback({
+                    "status": "sent",
+                    "message": f"✅ {selected_template_code} sent to {recipient} - {len(recipients) - index - 1} remaining",
+                    "progress": ((index + 1) / len(recipients)) * 100,
+                    "total": len(recipients),
+                    "completed": index + 1,
+                    "remaining": len(recipients) - index - 1,
+                    "current_recipient": recipient,
+                    "selected_template": selected_template_code,
+                    "smtp_used": smtp_name,
+                    "elapsed_time": elapsed_time,
+                    "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+                })
+                
+        except Exception as exc:
+            results["failed_sends"] += 1
+            results["errors"].append({
+                "recipient": recipient,
+                "error": str(exc),
+                "template": selected_template_code,
+                "timestamp": current_time.isoformat()
+            })
+            
+            # Progress update for failed send
+            if progress_callback:
+                progress_callback({
+                    "status": "failed",
+                    "message": f"❌ Failed to send {selected_template_code} to {recipient}: {str(exc)} - {len(recipients) - index - 1} remaining",
+                    "progress": ((index + 1) / len(recipients)) * 100,
+                    "total": len(recipients),
+                    "completed": index + 1,
+                    "remaining": len(recipients) - index - 1,
+                    "current_recipient": recipient,
+                    "selected_template": selected_template_code,
+                    "elapsed_time": elapsed_time,
+                    "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+                })
+        
+        # Add breaktime between emails (except for the last one)
+        if index < len(recipients) - 1:
+            breaktime = random.uniform(min_breaktime, max_breaktime)
+            results["timing"]["breaktime_used"]["total_breaktime"] += breaktime
+            
+            if progress_callback:
+                progress_callback({
+                    "status": "waiting",
+                    "message": f"⏳ Breaktime: {breaktime:.1f}s before next email...",
+                    "progress": ((index + 1) / len(recipients)) * 100,
+                    "total": len(recipients),
+                    "completed": index + 1,
+                    "remaining": len(recipients) - index - 1,
+                    "current_recipient": None,
+                    "selected_template": None,
+                    "breaktime": breaktime,
+                    "elapsed_time": elapsed_time,
+                    "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
+                })
+            
+            await asyncio.sleep(breaktime)
+    
+    # Final results
+    end_time = datetime.now()
+    total_duration = (end_time - start_time).total_seconds()
+    
+    results["timing"]["end_time"] = end_time.isoformat()
+    results["timing"]["total_duration"] = total_duration
+    results["timing"]["average_time_per_email"] = total_duration / len(recipients) if len(recipients) > 0 else 0
+    
+    # Final progress update
+    if progress_callback:
+        progress_callback({
+            "status": "completed",
+            "message": f"🎉 Random template campaign completed! {results['successful_sends']} successful, {results['failed_sends']} failed",
+            "progress": 100,
+            "total": len(recipients),
+            "completed": len(recipients),
+            "remaining": 0,
+            "current_recipient": None,
+            "selected_template": None,
+            "estimated_completion": end_time.isoformat(),
+            "elapsed_time": total_duration,
+            "estimated_remaining_time": 0,
+            "final_results": results,
+            "timing_summary": {
+                "total_duration": f"{total_duration:.1f}s",
+                "average_time_per_email": f"{results['timing']['average_time_per_email']:.1f}s",
+                "total_breaktime": f"{results['timing']['breaktime_used']['total_breaktime']:.1f}s",
+                "breaktime_range": f"{min_breaktime}-{max_breaktime}s"
+            },
+            "template_summary": results["template_usage"],
+            "smtp_summary": results["smtp_usage"]
+        })
     
     return results
 
