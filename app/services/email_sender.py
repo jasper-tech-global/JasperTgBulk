@@ -4,6 +4,7 @@ from email.utils import formataddr, formatdate, make_msgid
 from aiosmtplib import SMTP, SMTPException
 from typing import Optional
 from sqlalchemy import select
+from app.models.template import Template
 import socket
 import ssl
 import time
