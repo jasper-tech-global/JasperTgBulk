@@ -10,6 +10,10 @@ import ssl
 import time
 import random
 import hashlib
+import asyncio
+import re
+from datetime import datetime, timedelta
+from jinja2 import Template as JinjaTemplate
 
 
 class EmailSendError(Exception):
@@ -317,6 +321,7 @@ class AntiSpamOptimizer:
         
         # Add random comment to avoid exact matching
         if random.choice([True, False]):
+            timestamp = int(time.time())
             comments = [
                 f"<!-- Email generated at {timestamp} -->",
                 f"<!-- User requested email -->",
@@ -681,8 +686,7 @@ async def send_bulk_emails_with_breaktime(
         dict with bulk sending results and timing information
     """
     
-    import asyncio
-    from datetime import datetime, timedelta
+
     
     start_time = datetime.now()
     results = {
@@ -916,8 +920,6 @@ async def send_bulk_emails_with_random_templates(
         dict with bulk sending results and timing information
     """
     
-    from jinja2 import Template as JinjaTemplate
-    
     # Get all templates
     stmt = select(Template).where(Template.code.in_(template_codes), Template.active == True)
     result = await session.execute(stmt)
@@ -930,7 +932,6 @@ async def send_bulk_emails_with_random_templates(
     template_map = {tmpl.code: tmpl for tmpl in templates}
     
     # Randomize template order for recipients
-    import random
     random.shuffle(recipients)
     
     results = {
@@ -966,7 +967,6 @@ async def send_bulk_emails_with_random_templates(
             "breaktime_info": f"Breaktime: {min_breaktime}-{max_breaktime}s between emails"
         })
     
-    from datetime import datetime
     start_time = datetime.now()
     results["timing"]["start_time"] = start_time.isoformat()
     
